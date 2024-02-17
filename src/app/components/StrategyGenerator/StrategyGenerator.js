@@ -1,80 +1,113 @@
 'use client';
 import React, { useState } from 'react';
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-} from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
+import getStrategyToUse from '../../helpers/getStrategyToUse';
+import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
+import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
 import styles from './StrategyGenerator.module.css';
 
-const mockupStrategy = {
-  PAIR: 'ETHUSDT',
-  STRATEGY: 'reversion',
-  PERIOD: "['1 Jan, 2023', '10 Jan, 2023']",
-  OPERATION_EXPIRY_TIME: 2500,
-  INDICATOR: 'SMA',
+const mockupGeneratedStrategy = {
+  PAIR: 'BTCUSDT',
+  INDICATOR: 'RSI',
   SIGNAL_TRIGGER:
-    "{'cross_direction': 'below_to_above','period': 20, 'position_type': 'long', 'cross_percentage': 0}",
-  TAKE_PROFIT: 1,
+    "{'cross_direction': 'below_to_above', 'position_type': 'long', 'target_value': 70}",
+  TAKE_PROFIT: 2,
   STOP_LOSS: 1,
-  POSITION_STRUCTURE: "[{'weight': .5}, {'weight': .5}]",
-  START_GAP_PERCENTAGE: 0,
   MAX_WEIGHT_ALLOCATION: 1,
-  IDEAL_TRADE_AMOUNT: 5000,
-  INITIAL_BALANCE: 10000,
-  INCLUDE_BLACKBOX_LOGS: 1,
-  UPDATE_SL_EVERY: 0,
+  IDEAL_TRADE_AMOUNT: 1000,
 };
 
-const backtestPeriods = [
-  {
-    key: 'week',
-    content: 'Últimos 7 días',
-  },
-  {
-    key: 'month',
-    content: 'Últimos 30 días',
-  },
-  {
-    key: 'year',
-    content: 'Últimos 365 días',
-  },
-  {
-    key: 'custom',
-    content: 'Personalizado',
-  },
-];
-
 const StrategyGenerator = () => {
-  const [selectedKeys, setSelectedKeys] = useState(
-    new Set([backtestPeriods[0].key]),
-  );
-
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(', ').replaceAll('_', ' '),
-    [selectedKeys],
-  );
-
   const [loading, setLoading] = useState(false);
   const [formState, setFormState] = useState({
-    entry: '',
-    exit: '',
-    strategy: null,
+    entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
+    exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
+    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     viewDetails: false,
+    backtestPeriod: null,
+    backtestResults: null,
   });
+
+  console.log('formState: ', formState);
 
   const canProceedToGenerate = formState.entry && formState.exit;
 
   async function handleGenerateStrategy() {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setFormState({ ...formState, strategy: mockupStrategy });
-      toast.success('Estrategia creada con éxito');
-    }, 2000);
+    const strategyPromise = fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/translate-strategy`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          natural_language_strategy: `Entry: ${formState.entry} Exit: ${formState.exit}`,
+        }),
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setLoading(false);
+          setFormState({ ...formState, strategy: data.config });
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        throw new Error('Error creando estrategia');
+      });
+
+    toast.promise(strategyPromise, {
+      loading: 'Creando estrategia...',
+      success: (data) => {
+        return `Estrategia creada con éxito`;
+      },
+      error: 'Error creando estrategia',
+    });
+  }
+
+  async function handleRunBacktest() {
+    setLoading(true);
+
+    const payloadToSend = buildBacktestRequestPayload({
+      config: formState.strategy,
+      period: formState.backtestPeriod,
+    });
+
+    console.log('payloadToSend: ', payloadToSend);
+
+    const backtestPromise = fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/backtest`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payloadToSend),
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('la respuesta - a! ', data);
+        setFormState({ ...formState, backtestResults: data });
+      })
+      .catch((error) => {
+        console.log('Error corriendo backtest: ', error);
+        throw new Error('Error corriendo backtest');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    toast.promise(backtestPromise, {
+      loading: 'Analizando estrategia...',
+      success: (data) => {
+        return `Backtest finalizado con éxito`;
+      },
+      error: 'Error corriendo backtest',
+    });
   }
 
   function toggleDetails() {
@@ -108,7 +141,7 @@ const StrategyGenerator = () => {
             <h3 className={styles.stepTitle}>Exit:</h3>
             {formState.strategy !== null ? (
               <div className={`${styles.textarea} ${styles.disabled}`}>
-                {formState.entry}
+                {formState.exit}
               </div>
             ) : (
               <textarea
@@ -169,44 +202,32 @@ const StrategyGenerator = () => {
           <div className={styles.step}>
             <div className={styles.backtestPeriod}>
               <div className={styles.stepTitle}>Período a testear:</div>
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button variant="bordered" className={styles.datesDropdown}>
-                    {
-                      backtestPeriods.find((period) =>
-                        selectedKeys.has(period.key),
-                      )?.content
-                    }
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu
-                  aria-label="Single selection example"
-                  variant="flat"
-                  disallowEmptySelection
-                  selectionMode="single"
-                  selectedKeys={selectedKeys}
-                  onSelectionChange={setSelectedKeys}
-                >
-                  {backtestPeriods.map((period) => (
-                    <DropdownItem key={period.key}>
-                      {period.content}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
+              <BacktestPeriodsDropdown
+                onChange={(value) => {
+                  console.log('value: ', value);
+                  setFormState({ ...formState, backtestPeriod: value });
+                }}
+              />
             </div>
             <div className={styles.backtestActions}>
               <Button
                 color="primary"
                 className={styles.runBacktestButton}
-                // isLoading={loading}
-                // onClick={handleGenerateStrategy}
-                // isDisabled={!canProceedToGenerate}
+                isLoading={loading}
+                onClick={handleRunBacktest}
               >
                 Correr Backtest
               </Button>
             </div>
           </div>
+          {formState.backtestResults !== null && (
+            <div>
+              <div className={styles.stepTitle}>Resultados:</div>
+              <div>
+                <pre>{JSON.stringify(formState.backtestResults, null, 2)}</pre>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
