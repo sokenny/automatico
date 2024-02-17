@@ -1,0 +1,775 @@
+Clean code must be easily understood by humans and you should write clean code for your later self and your co-workers in the first place, not for the machine.
+
+The purpose of this document is to define standards and rules that we all are going to follow in order to have a clean and consistent codebase, which will be easy and fun to work with. The end goal of defining these standards and rules would be that no matter which developer pushes the code, you can not tell the difference, because code will be pretty much the same.
+
+
+
+1. Naming conventions
+
+The first step in making code consistent is to define naming conventions for variable names, constants, function names, classes and instances.
+
+1. Use intention-revealing names and don't worry if you have a long variable name. This way, names will become searchable and will help a lot when refactoring or just searching for something.
+
+Do not just name your variable let test; or let res;. If your variable holds a response from Stripe, name it let stripeResponse, that way it will make more sense for your co-workers to find it easier and faster.
+
+2. Make your variable and function names easy to pronounce, because for the human mind it takes less effort to process. When you are doing code reviews with your fellow developers, these names are easier to reference.
+
+Do not name it like let ttFraudStatusForOwnerFromListing;, you can do it like let ownerFraudStatus; or something similar. Long variable names are good, but make it less easy to pronounce. Do not think a lot of these two first standards, they should come naturally to you.
+
+3. Use camelCase when naming variables, functions, instances and object keys. The only exception would be variables and object keys that can be mapped directly to database fields. In that case, it's allowed to use snake case (snake_case) for the name.
+
+// bad example 
+const my_variable = '';
+
+// good example
+const myVariable = '';
+
+// bad example
+function my_function() {}
+
+// good example 
+function myFunction() {}
+
+// bad example 
+const my_object = {
+ first_key: "Some value",
+}
+
+// good example 
+const myObject = {
+ firstKey: "Some value",
+}
+
+// Exception examples
+const ownerData = {
+ first_name,
+ last_name
+}
+
+models.owners.create(ownerData);
+
+// Using snake case in GraphQL for mutation input fields and types if they match database column names
+export const myType = new GraphQLObjectType({
+  name: 'myType',
+  description: 'myType,
+  fields: () => ({
+    status: { type: GraphQLString },
+    enabled_at: { type: GraphQLDateTime },
+    canceled_at: { type: GraphQLDateTime },
+    created_at: { type: GraphQLDateTime },
+    updated_at: { type: GraphQLDateTime },
+  }),
+});
+
+
+4. Use UpperCamelCase or PascalCase when naming constructors and classes.
+
+class RentPayments {...} 
+
+const rentPayments = new RentPayments();
+
+
+5. If the property is boolean or if the function returns a boolean value, use is and has prefixes for names. If the function is used to fetch and return data, use prefix get for the name.
+
+const isVerified = true;
+
+const hasTurboPayFeature = false;
+
+function isVerified() { ... }
+
+function hasFeatureEnabled() { ... }
+
+function getActiveListings() { ... }  
+
+
+6. Uppercase constants only if it's a const (it can not be reassigned) and the developer can trust it (and its nested properties) to never change.
+
+const API_KEY = '...';
+
+const OWNER_STATUS = { ... };
+
+
+7. Do not use unnecessary words inside method names.
+
+// Method is located inside owners.service.js 
+
+// bad example 
+function getOwnerProfile() { ... }
+
+// good example
+function getProfile() { ... }
+
+
+8. When exporting objects, uppercase at the top level of export and all nested properties.
+
+const UTILITIES = { 
+  ELECTRICITY: 'ELECTRICITY',
+   GAS: 'GAS',
+   WATER: 'WATER',
+   SEWER_SEPTIC: 'SEWER_SEPTIC', 
+  TRASH: 'TRASH', 
+  LAWN_CARE: 'LAWN_CARE',
+   SNOW_REMOVAL: 'SNOW_REMOVAL',
+   HOA_CONDO_FEE: 'HOA_CONDO_FEE',
+ };
+  module.exports = UTILITIES;
+
+// when you need specific one in another file you can call it like this
+import { WATER } from ‘./utilities’
+
+
+9. Passing data-qa as a prop.
+
+To standardize how we pass data-qa prop that's used in e2e tests we can follow a few rules:
+
+If the component/element is the final recipient of the data-qa prop (meaning, the prop is applied to that element and is not going to be passed further along), we pass it as data-qa.
+
+<div className={styles.something} data-qa="some-string" /> 
+
+If the prop is going to be passed further along (meaning it's not going to be applied to the element it's being passed to) we pass it as dataQa (to follow the React way of naming props).
+
+<SomeComponent dataQa="some-string" /> 
+
+***
+
+const SomeComponent = ({
+  dataQa,
+}) => <div data-qa={dataQa}/>
+
+Some components used with react-final-form have a special way of passing props to underlying elements. For example, if data-qa needs to be passed to the underlying inside our component we would do it like this:
+
+<Field
+ component={Input}
+ name="input_name"
+ inputProps={{
+   'data-qa': 'some-string'
+ }}
+/>
+
+This is because inputProps is just being spread on the underlying <input />. We are not destructuring this prop anywhere before it's being applied to the <input />. If it's getting destructured it should be passed as dataQa.
+
+
+
+2. Project structure practices in api/
+
+1. File names should be snake_case.
+
+api/src/services/rent_payments.service.js
+
+
+2. Directory names should be kebab-case.
+
+api/src/services/rent-payments/
+
+
+3. Keep services small and make sub-services in order group code by business logic.
+
+Example would be rent_payments.service.js in which we have a lot of methods, amongst which we have these 4 specific methods:
+
+createPaymentRequestRule()
+
+editPaymentRequestRule()
+
+deletePaymentRequestRule()
+
+findPaymentRequestRuleById()
+
+We could create a separate service called payment_request_rule.service.js in which we would have these 4 methods.
+
+4. Use constants for ENUM fields for models
+
+In order to keep code organized and reusable, we should use constants for our ENUM types for models. When you are creating migration files, you should always use String type for fields, like status, type, etc. but inside the model itself, you should always use ENUM type. The reason for this is that we can easily add/update/remove ENUM types inside models, without actually altering table structure. The benefit of having ENUM strings inside constants is when we need to change the value of ENUM, we do that just in one place inside constant and that's it. For example, we will take status column from payout_ledgers table.
+
+Inside the migration file, for status column, we have the following code:
+
+...
+status: {
+  type: Sequelize.STRING,
+  allowNull: true,
+},
+...
+
+
+You will notice that inside migration, the type of status column is String. Now, if we take a look inside the model, this specific column will have a definition like this:
+
+...
+status: {
+  type: DataTypes.ENUM(
+    'DRAFT',
+    'PENDING',
+    'IN_TRANSIT',
+    'PAID',
+    'FAILED',
+    'CANCELED',
+    'FAILED_PAYMENT',
+  ),
+  allowNull: true,
+},
+...
+
+
+Now, the last thing we want to do here is to create a constant file for this column inside api/src/constants/payout_ledgers/status.js with the following content:
+
+const STATUS = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  IN_TRANSIT: 'IN_TRANSIT',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  CANCELED: 'CANCELED',
+  FAILED_PAYMENT: 'FAILED_PAYMENT',
+};
+
+module.exports = STATUS;
+
+
+and we can use it like this in other files:
+
+import STATUS from '../constants/payout_ledgers/status';
+
+...
+payoutLedger.status == STATUS.DRAFT
+...
+
+
+
+
+3. Unit Testing standards
+
+1. For services/modules/mutations that have multiple functions/methods, create a directory for tests and keep one file per method/function. This way we will have a better understanding of which methods/functions are covered and where to find tests for those, plus we will keep test files smaller. If some service/module/mutation has only one function/method, no need for a separate file or if there are only a couple of smaller functions/methods.
+
+A good example of this is rent_payments.service.js in which we have more than 20 methods and test for just sendRentPayment is 700-800 lines of code. We should create a directory named rent-payments-service-tests at the same level as the service file and add a test for sendRentPayment method to its own file called send_rent_payment.espec.js.
+
+2. Use it inside tests instead of test.
+
+This is just to keep our tests consistent. it is an alias for test, the only difference is readability, not functionality. When it comes to reading the result of a failing test that you haven't written yourself it helps to faster understand what the test is about.
+
+3. Include 3 parts in each test name. Make the test speak at the requirements level so it’s self-explanatory also to QA engineers and developers who are not familiar with the code internals. State in the test name what is being tested (unit under test), under what circumstances, and what is the expected result.
+
+// bad example
+it(‘Should return the right status’)
+
+//good example
+it(‘Should produce a product status of pending approval when no price is specified’)
+
+
+4. Avoid global test fixtures and seeds, add data per test.
+
+To prevent tests coupling and easily reason about the test flow, each test should add and act on its own set of DB rows. Whenever a test needs to pull or assume the existence of some DB data – it must explicitly add that data and avoid mutating any other records.
+
+
+
+4. Icon writing conventions
+
+1. Optimizing the SVG
+
+After downloading the icon from InVision we first want to pass it through an SVG Optimizer, and use the optimized version of the SVG when creating a new Icon Component.
+
+Here is a screencap of the SVG optimization flow. At the end of the video, we can see 2 icons, one for downloading the optimized SVG and the other to copy the optimized SVG code and we can use either one.
+
+2. Creating a React Component
+
+After optimizing the icon we want to make and export a React Component that will render this new icon. Now we use our downloaded SVG markup or the code we copied and fit it into this template:
+
+import React, { memo } from 'react';
+import PropTypes from 'prop-types';
+import colors from '../constants/colors';
+
+const IconName = (props) => (
+  <svg {...props} viewBox="[SVG viewBox]" fill={props.color}>
+    [Markup from the optimized SVG goes here]
+  </svg>
+);
+
+IconName.defaultProps = {
+  width: [SVG Width], // We put the SVG width as a default prop to make sure the icon is rendered properly inside `flex` containers
+  height: [SVG Height], // We put the SVG height as a default prop to make sure the icon is rendered properly inside `flex` containers
+  color: colors.primary, // We put the icons color as a default prop (Most icons use the colors already defined inside our `colors.js` file)
+};
+
+IconName.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  color: PropTypes.string,
+};
+
+export default memo(IconName);
+
+
+
+Important
+
+We should put the new Icon Component inside the fe/src/icons folder.
+
+All props must be passed to the <svg /> element, not the child <path /> and <g /> elements. The only exception to this is some custom transforming of the icon based on a prop (e.g. Rotating the <path /> element inside the SVG based on some prop) or the multi-colored SVGs (usually illustrations instead of icons) which probably won't have the fill prop on the <svg /> element but each <path /> and <g /> element will most likely have their own fills that won't change.
+
+If the optimized SVG (that is a one-color icon) has a <path /> or a <g /> element with the fill prop, move that prop to the <svg /> element (see the template above). Also, if they have a fill-rule prop, that prop can be deleted.
+
+We don't need the xmlns="http://www.w3.org/2000/svg" prop on <svg /> element
+
+viewBox prop is required and will always look like this: viewBox="0 0 [SVG Width] [SVG Height]"
+
+The width and height default props can be derived from the viewBox if not otherwise specified.
+
+If the optimized SVG still ends up having unused elements (e.g. an empty <g /> Element wrapping a <path /> element) we should remove those elements.
+
+3. Naming the Icon Component
+
+We should make sure to use a generalized name for the new Icons as most of them are going to be reused in a lot of places. (e.g. A plus sign inside a circle that is used in the Stepper component to increment the step, should be called PlusCircle instead of StepperIncrement).
+
+We should also avoid having the Icon inside the icon name as it is redundant.
+
+4. Storybook
+
+If the above steps are followed we shouldn't need to do anything else for the new icon to appear inside the storybook. This is how the index of all our icons inside the storybook looks like:
+
+
+
+
+
+5. Comments inside code
+
+1. Add comments where needed.
+
+Having comments inside your code is sometimes very useful. If you think that a piece of code or method is complex, feel free to add a comment above it with some brief explanation, so that the reviewer or next developer who works on it has more context around it and understands it better. Also, use comments inside the code as a message for future developers who will work on your code. A good example of using comments inside code is when you are implementing a 3rd party service that has some parameters that can break our application if changed. You should put a comment above this code and just say something like:
+
+// DO NOT CHANGE THIS, you can break this feature if you use something different from
+params: ['test', 'joe'],
+
+
+2. Usage of FIXME and MOCKED inside comments
+
+In order to prevent hotfixes from breaking our application, we introduced two keywords that developers are encouraged to use inside comments. These two are important because we have some ESLint rules that will prevent merging PRs into main that have FIXME or MOCKED keywords inside code changes.
+
+FIXME
+
+If you have something that should be fixed or it's broken inside your PR and you did not have a chance to fix it before pushing your PR, make sure to add the FIXME keyword in the comments with some context around what should be fixed.
+
+// FIXME 
+// Did not have chance to fix this validation, will do it in next PR.
+
+
+MOCKED
+
+If you are working on the FE part of our application and BE is not ready yet, but you want to make sure your code works, you can mock BE data and push your PR. But, you need to remember to add the MOCKED keyword inside a comment, in order to prevent pushing mocked data to production.
+
+// MOCKED 
+// This date is mocked, make sure to use created_at once BE part is done
+getFormattedDate('2018-12-28')
+
+
+
+
+6. Folder Structure on the fe
+
+It's annoying when you can't figure out where things should go and if you are making a good decision on where things should go.
+
+1. Shared and components folder structure
+
+Shared components are common components that we can reuse on any part of the application without and they should be located in ./fe/src/components
+
+A single component should have a structure like this:
+
+src/components/YourComponent - the folder where your component is located
+
+src/components/YourComponent/YourComponent.js - usually the main component
+
+src/components/YourComponent/YourComponent.module.scss - all CSS that you use for that component
+
+src/components/YourComponent/YourComponent.stories.js - storybook for your component
+
+src/components/YourComponent/index.js - export of the main component
+
+if it's easier to split your component into smaller components that are not reusable across the application you can place it in the same folder as the component you are building like.
+
+src/components/YourComponent/components/Box.js
+
+src/components/YourComponent/components/Box.module.scss
+
+2. Final form validators
+
+they should be located in ./fe/src/validators and each validator should have it's own file
+
+3. Pages
+
+Pages should have a similar structure as the components
+
+src/pages/path-to-your-page/YourPage - folder where your page is located
+
+src/pages/path-to-your-page/YourPage/YourPage.js
+
+src/pages/path-to-your-page/YourPage/YourPage.module.scss
+
+if you have some components that are related to that page you can add them to the src/components or in the page its own components folder
+
+src/pages/path-to-your-page/YourPage/components/YourPageComponent/YourPageComponent.js
+
+src/pages/path-to-your-page/YourPage/components/YourPageComponent/YourPageComponent.module.scss
+
+For example if you have page located at /owners/leases/view/:lease-id component for that page should be located at ./fe/src/pages/leases/view/
+
+./fe/src/pages/leases/view/View.js - main page component
+
+./fe/src/pages/leases/view/index.js - main page component export
+
+You don't have to overthink it if something is missing in the guide you can place it where you think it fits.
+
+
+
+7. Global exports
+
+Try not to use global export for everything
+
+It can be great to export everything from one file and have one place where you can take anything you want. That approach is great when you start a project and it makes things much easier and faster. As the project grows we try to improve things by changing and removing the code. That approach prevents us from doing that because in JavaScript there is no easy way to figure out what is used and how. So instead of changing the method to do something else we are scared of doing that change so things do not break we add a new similar method. When splitting everything into each file we can easily figure out where that file is included and if we can remove it or not. Our build tools can optimize the final build but because of the nature of JavaScript and side effects, it's not easy to build tools to figure out if some things are used or not. So it makes sense to only include things we are using and not dead code and make our application faster by shipping only the things that are used on that page. Based on that we should try to avoid having one export file for everything.
+
+For example:
+
+Bad
+
+import { trimWhiteSpace, logError } from './src/utilities';
+
+Good
+
+import trimWhiteSpace from './src/utilities/trim-white-space.js';
+import logError from './src/utilities/log-error.js';
+
+
+
+8. Storybook
+
+While working on the new feature it would be good to split work into components and leverage the storybook as a tool for faster development and splitting the work between developers. Using this approach one developer can work on one part of the page and another one on the other part. After both of them are done someone else can connect everything together on the same page. Also, work can be verified much faster without waiting for a big pull request. Every component that can be added to the storybook should include it. That will help us to not have the same implementation of two same things and it would be easier to figure out what we already have in the codebase. To figure out if a component should have a storybook good rule is to check if the component is dumb or it does not have an API and data dependency.
+
+Stories should be located in the same file as a component with the component name with stories.js -> Button.stories.js
+
+Example storybook
+
+import React from 'react';
+import Button from './Button';
+
+export default {
+ title: 'Buttons/Button',
+ component: Button,
+};
+
+const Template = (args) => <Button {...args}>Simple Button</Button>;
+
+export const PrimaryButtonLarge = Template.bind({});
+PrimaryButtonLarge.storyName = 'Plain Button Large';
+PrimaryButtonLarge.args = { };
+
+export const PrimaryButtonDisabled = Template.bind({});
+PrimaryButtonDisabled.storyName = 'Plain Button Disabled';
+PrimaryButtonDisabled.args = { disabled: true };
+
+
+
+Storybook is using PropTypes to show component documentation so make sure that you set it for your components
+
+Official guide https://storybook.js.org/docs/react/writing-stories/introduction 
+
+Storybooks are auto deployed to the s3 and posted to the pr.
+
+https://tt-dev-storybook.s3.amazonaws.com/[branch-name]/index.html https://tt-dev-storybook.s3.amazonaws.com/develop/index.html  https://tt-dev-storybook.s3.amazonaws.com/develop2/index.html  https://tt-dev-storybook.s3.amazonaws.com/develop3/index.html  https://tt-dev-storybook.s3.amazonaws.com/main/index.html  https://tt-dev-storybook.s3.amazonaws.com/prod/index.html
+
+https://tt-dev-storybook.s3.amazonaws.com/pr/[branch-name]/index.html
+
+
+
+9. CSS first approach
+
+Try to use CSS for things that can be done in CSS. It's more performant than JavaScript because it’s using GPU instead of CPU so when you can leverage CSS instead of JavaScript.
+
+For example
+
+To determine the device we are going to use @media queries instead of using window.innerWidth
+
+Instead of using onMouseEnter and onMouseLeave to style the components use :hover
+
+
+
+10. classnames
+
+use classnames utility function to handle class name concatenation
+
+import cx from 'classnames';
+import styles from './Button.module.scss';
+const isPrimary = false;
+const isOrangeButton = true;
+const className = 'parent'
+
+cx(styles.button, {
+ [styles.primary]: isPrimary,
+ [styles.orange]: isOrangeButton,
+}, className);
+
+// 'button orange parent'
+
+
+
+
+
+11. Avoid CSS !important
+
+You should avoid using !important in CSS because once you use it, nothing else can override it. See the specificity diagram below. 
+
+
+
+From http://specifishity.com/
+
+So instead of code like this:
+
+// HelpfulInfo.module.scss
+
+.helpCard {
+  background-color: lightyellow !important;
+}
+
+// HelpfulInfo.js
+import cx from 'classnames';
+import styles from './HelpfulInfo.module.scss';
+
+return (
+    <div className={cx(styles.helpCard)}>
+      Some content here.
+    </div>
+  );
+
+
+
+
+You should do this to increase the specificity by using two (or more) classes. Classes are pretty low in the specificity ranking so it makes it very easy to override in parent components as needed:
+
+// HelpfulInfo.module.scss
+
+.helpCard.attention {
+  background-color: lightyellow;
+}
+
+// HelpfulInfo.js
+import cx from 'classnames';
+import styles from './HelpfulInfo.module.scss';
+
+return (
+    // It's as easy as using the two classes from above.
+    // CSS Modules does the rest for you.
+    <div className={cx(styles.helpCard, styles.attention)}>
+      Some content here.
+    </div>
+  );
+
+
+
+
+You can see an example of this in our actual code in the following two files:
+
+https://github.com/turbotenant/main/blob/c461da28a598f894dd605155295304a4786130b5/fe/src/components/HelpfulInfo/HelpfulInfo.stories.js#L67
+
+https://github.com/turbotenant/main/blob/c461da28a598f894dd605155295304a4786130b5/fe/src/components/HelpfulInfo/HelpfulInfo.stories.js#L67
+
+12. colors
+
+All colors are located at
+
+./fe/src/constants/colors.js
+
+./fe/src/constants/colors.scss
+
+When changing the colors you need to update both files
+
+
+
+13. Accessibility
+
+While working on the app you should always have accessibility in your mind. So keep your HTML code as semantic as possible. Making our app accessible will make our app easier to navigate for everyone not just people with disabilities.
+
+Some of the things you should keep in mind while coding
+
+don't use div's for everything
+
+the label should always include id as a reference to the element
+
+img should always have an alt tag
+
+don't override CSS outline without a fallback
+
+have only one h1 tag on the page
+
+use ul, ol and dl for list content
+
+when attaching a click handler use button instead of div
+
+use a element to linking to another page instead of history.push
+
+You can find more info here: https://www.a11yproject.com/checklist/ 
+
+
+
+14. Copy / Paste
+
+Don't be scared to repeat or copy some code in some other place where it can fit without making an abstraction. Because the wrong abstraction is worst than having the same code in two places. For example, it can be a good idea to abstract common page elements like page title and copy, and in the end, we figure out that they are not always the same and we need to tweak them on every page.
+
+
+
+15. Don't use existing components Column, Container, and Row
+
+Right now we are using Column Container and Row to create a layout but going forward we will not use that approach because it’s not as flexible as plain CSS. Usually, in our user interface, on the desktop, we show things in a row and on the mobile as a column that we can solve easily using CSS but using Column and Row from commons does not give us that level of flexibility and we have to duplicate the markup one for desktop and another one for mobile. Doing something like that using CSS is easy like the example below.
+
+.container {
+  display: flex;
+  flex-direction: row;
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+With Column, Container, and Row we will have to duplicate markup because it's not that flexible.
+
+
+
+16. How to properly write and test Services and Modules (without TT object)
+
+1. New files
+
+All modules and services should export their member functions directly, and not as part of a function that needs to be initialized. All functions should be declared and exported as an object containing all the members that need access from another file. For example, services and modules should be changed to all have this form, as opposed to exporting just one function with module exports, we need to export all the members too.
+
+function x() {
+ ...
+ 
+}
+function y {
+ ...
+}
+ 
+export {
+ x,
+ y
+}
+
+
+2. About existing files
+
+All new methods created inside a service/module should be declared inside the file (not inside a function) and be exported as a member directly. It’s possible to combine both the new approach and the old approach by having the file export the initializing function with “export default”. We should NOT include the new methods as part of the “export default”
+
+Example of an old existing service with a new method:
+
+function newMethod() {
+ ...
+}
+ 
+function x() {
+ ...
+}
+ 
+## THIS IS HOW ALL FUNCTIONS SHOULD BE EXPORTED
+export {
+  newMethod,
+  x
+}
+export default () => {
+  function x() {
+    ## THIS FUNCTION SHOULD BE DECLARED OUTSIDE
+    ... 
+  }
+  return {
+    x,
+    y
+  }
+}
+
+
+3. How to test and mock new services
+
+When writing tests, the methods that need testing should be imported directly into the test from the service. That is, we will not use the form const aService = service({}) to initialize them anymore. Other services or modules called by the service being tested will have to be mocked with jest.mock. The mock being used has to be initialized at the beginning of the file and can be used in each of the tests in the same way as it has been used so far. Calling resetAllMocks after each test is very useful if we want to reuse the same mock multiple times.
+
+import { markForUpdate as zillowSpy } from '../../modules/zillow';
+
+jest.mock('../../modules/zillow', () => {
+  const spyMarkForUpdate = jest.fn();
+  return {
+    markForUpdate: spyMarkForUpdate,
+    __esModule: true,
+  };
+});
+
+
+4. About Models references
+
+Avoid writing TT.Models.XXXX for anything. In all modified files where this is used, it should be replaced in favor of simple models.XXXX. This can be done by adding a normal import in that file if it’s not present: import models from ‘../../db/models’
+
+5. Code Examples
+
+Migrating and mocking a module: https://github.com/turbotenant/main/pull/3759/files
+
+The migrating method inside existing service (leases.service): https://github.com/turbotenant/main/pull/3801/files#diff-27f3133c2ba1c2dc16c33c65d1d0ca1836e134ec4b02f7a4c6c6e210b21e6731
+
+How to import errors and mailer without TT object: https://github.com/turbotenant/main/blob/633e736de001d50516c90fb01bc5252bbc46ff2a/api/src/services/transunion_shareable.service.js 
+
+More examples on existing services: https://github.com/turbotenant/main/pull/3861/files#diff-b6ad2c5fb3edd3244c3f8bc21862cf797f0c146f894735b519f058e110d6095c
+
+
+
+17. Update DB diagram when you change DB structure
+
+
+
+Update the DB diagram every time you change any part of our DB that goes into production. Whether it is adding, deleting, or editing of Index, Columns, Type of Columns, Table… Once your PR is approved, you should publish your diagram to dbdocs.
+
+Our public password-protected diagram can be found at this link: https://dbdocs.io/dev7295117cc4/turbotenant, and can be opened with the password which you can find in LastPass.
+
+We define our database schema using DBML, and the code living in /api/dbdiagram.dbml file.
+
+DB schema must always be up to date with public DB, for publishing we use the DB Docs service, to install dbdocs you need to have NodeJS and NPM installed. 
+For DB Docs documentation you can check this link: https://dbdocs.io/docs 
+
+
+Here is an example of the process and commands for Terminal to do from Installation to Publishing:
+
+Install dbdocs globally: sudo npm install -g dbdocs
+
+Start logging in with command:  dbdocs login
+
+Choose option 1) Email: 1
+
+When asked for an email, type: dev@turbotenant.com
+
+The OTP code will be sent to all engineers @turbotenant.com mail addresses, after you receive it, enter it and press Enter
+
+You are now logged in and ready to Publish your changes by running this command from the project root directory:dbdocs build api/dbdiagram.dbml --project=turbotenant
+
+To open a diagram in a browser, you will need this password which you can find in LastPass.
+
+
+
+
+
+More examples on existing services: https://github.com/turbotenant/main/pull/3861/files#diff-b6ad2c5fb3edd3244c3f8bc21862cf797f0c146f894735b519f058e110d6095c
+
+
+
+18. Backfill scripts
+
+
+
+Backfill scripts are usually run for code updates that result in old DB data to have to be updated, or filled.
+
+They should be located in the api/bin folder
+
+Name should be formatted to include the date the script was created.
+
+Always avoid making changes to timestamps fields in the updated sequelize models. This can be ensured by using the silent: true sequelize option.
+
+19. Project structure practices in fe/
+
+Sometimes you need to write code that provides a service or utility used across multiple unrelated components. For the FE, we put the files for this type of code in the fe/src/helpers   folder. Create a single file for each function instead of putting multiple things into one file. Always create unit tests. For an example, take a look at cardinal-to-ordinal.js and cardinal-to-ordinal.test.js.
+
+20. Cypress tests best practices
+
+When writing and maintaining Cypress tests, it’s important to ensure their reliability to changes in the UI. To achieve this, we must make use of data-qa attributes for selecting elements.
+
+Use of data-qa attributes:
+
+Assign a unique data-qa attribute to each element that needs to be interacted with or verified in Cypress tests. This attribute should be descriptive of the element's role or function within the page.
+
+Selector Specificity:
+
+Should be using data-qa selectors over CSS class selectors, tag names, or text content selectors (like .contains()). This reduces the dependency of tests on the specific structure or styling of the UI.

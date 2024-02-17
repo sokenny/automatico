@@ -1,0 +1,33 @@
+.container .userContent {
+  margin-bottom: 4px;
+}
+
+.assistantContent {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.assistantContent .sql {
+  color: blue;
+  cursor: pointer;
+  white-space: pre-wrap;
+}
+
+.assistantContent .description {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.container .copy {
+  display: none;
+  transform: translateY(3px);
+  opacity: 0.3;
+}
+
+.container .sql:hover .copy {
+  display: inline-block;
+}
+
+.copy:hover {
+  opacity: 0.5;
+}
