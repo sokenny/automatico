@@ -27,19 +27,24 @@ const backtestPeriods = [
   },
 ];
 
-const BacktestPeriodsDropdown = ({ onChange }) => {
+const BacktestPeriodsDropdown = ({ onChange, disabled }) => {
   const [selectedKey, setSelectedKey] = useState(
     new Set([backtestPeriods[0].key]),
   );
 
   useEffect(() => {
+    console.log('corre el use effect: ', selectedKey.values().next().value);
     onChange(selectedKey.values().next().value);
   }, []);
 
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button variant="bordered" className={styles.datesDropdown}>
+        <Button
+          variant="bordered"
+          className={styles.datesDropdown}
+          isDisabled={disabled}
+        >
           {
             backtestPeriods.find((period) => selectedKey.has(period.key))
               ?.content

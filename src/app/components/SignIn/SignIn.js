@@ -8,7 +8,7 @@ const SignIn = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   if (session) {
-    router.push('/chat');
+    router.push('/backtest');
   }
 
   if (status === 'loading') {

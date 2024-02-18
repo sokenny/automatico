@@ -1,17 +1,29 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
+import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
+import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
+import BacktestResults from '../BacktestResults/BacktestResults';
+import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
+
+// TODO-p1: Pensar como voy a hacer para que determine el software que velas usar
+
+const MAX_DAYS_ALLOWED = 45;
 
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
   INDICATOR: 'RSI',
-  SIGNAL_TRIGGER:
-    "{'cross_direction': 'below_to_above', 'position_type': 'long', 'target_value': 70}",
+  SIGNAL_TRIGGER: {
+    cross_direction: 'below_to_above',
+    position_type: 'long',
+    target_value: 70,
+    period: 14,
+  },
   TAKE_PROFIT: 2,
   STOP_LOSS: 1,
   MAX_WEIGHT_ALLOCATION: 1,
@@ -23,11 +35,35 @@ const StrategyGenerator = () => {
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
-    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    // entry: '',
+    // exit: '',
+    strategy: null,
     viewDetails: false,
     backtestPeriod: null,
+    customPeriodFrom: null,
+    customPeriodTo: null,
     backtestResults: null,
+    runBacktestDisabled: false,
   });
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    if (formState.backtestResults !== null && resultsRef.current) {
+      // Scroll to the resultsRef element
+      resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [formState.backtestResults]);
+
+  const numDaysInPeriod = formState.strategy
+    ? getDaysInFormPeriod({
+        period: formState.backtestPeriod,
+        customDates: {
+          from: formState.customPeriodFrom,
+          to: formState.customPeriodTo,
+        },
+      })
+    : null;
 
   console.log('formState: ', formState);
 
@@ -51,10 +87,11 @@ const StrategyGenerator = () => {
       .then((data) => {
         if (data.success) {
           setLoading(false);
-          setFormState({ ...formState, strategy: data.config });
+          setFormState({ ...formState, strategy: sanitizeConfig(data.config) });
         }
       })
       .catch((error) => {
+        console.error('Error creando estrategia: ', error);
         setLoading(false);
         throw new Error('Error creando estrategia');
       });
@@ -70,11 +107,10 @@ const StrategyGenerator = () => {
 
   async function handleRunBacktest() {
     setLoading(true);
+    setFormState({ ...formState, backtestResults: null });
 
-    const payloadToSend = buildBacktestRequestPayload({
-      config: formState.strategy,
-      period: formState.backtestPeriod,
-    });
+    console.log('form strat before sending: ', formState.strategy);
+    const payloadToSend = buildBacktestRequestPayload(formState);
 
     console.log('payloadToSend: ', payloadToSend);
 
@@ -90,8 +126,11 @@ const StrategyGenerator = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log('la respuesta - a! ', data);
-        setFormState({ ...formState, backtestResults: data });
+        setFormState({
+          ...formState,
+          backtestResults: data,
+          runBacktestDisabled: true,
+        });
       })
       .catch((error) => {
         console.log('Error corriendo backtest: ', error);
@@ -102,7 +141,7 @@ const StrategyGenerator = () => {
       });
 
     toast.promise(backtestPromise, {
-      loading: 'Analizando estrategia...',
+      loading: 'Analizando estrategia. Puede tardar un poco...',
       success: (data) => {
         return `Backtest finalizado con éxito`;
       },
@@ -174,9 +213,12 @@ const StrategyGenerator = () => {
         <>
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategy}>
-              <div className={styles.cta}>
-                <div className={styles.stepTitle}>Estrategia creada</div>
-              </div>
+              {/* TODO-p1: Poder editar el JSON de la estrategia. Con un validador del payload  */}
+              <div className={styles.stepTitle}>Estrategia creada:</div>
+              <StrategyRow
+                strategy={formState.strategy}
+                className={styles.strategyRow}
+              />
               {!formState.viewDetails && (
                 <div className={styles.strategyPreview}>
                   {JSON.stringify(formState.strategy, null, 2)}
@@ -201,13 +243,55 @@ const StrategyGenerator = () => {
           </div>
           <div className={styles.step}>
             <div className={styles.backtestPeriod}>
-              <div className={styles.stepTitle}>Período a testear:</div>
-              <BacktestPeriodsDropdown
-                onChange={(value) => {
-                  console.log('value: ', value);
-                  setFormState({ ...formState, backtestPeriod: value });
-                }}
-              />
+              <div className={styles.titleWrapper}>
+                <div className={styles.stepTitle}>Período a testear:</div>
+                <BacktestPeriodsDropdown
+                  onChange={(value) => {
+                    console.log('valorsito: ', value);
+                    setFormState({
+                      ...formState,
+                      backtestPeriod: value,
+                      runBacktestDisabled: false,
+                    });
+                  }}
+                  disabled={loading}
+                />
+              </div>
+              {formState.backtestPeriod === 'custom' && (
+                <div className={styles.customDates}>
+                  <div className={styles.dateInput}>
+                    <label>Desde:</label>
+                    <input
+                      type="date"
+                      onChange={(e) =>
+                        setFormState({
+                          ...formState,
+                          customPeriodFrom: e.target.value,
+                          runBacktestDisabled: false,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className={styles.dateInput}>
+                    <label>Hasta:</label>
+                    <input
+                      type="date"
+                      onChange={(e) =>
+                        setFormState({
+                          ...formState,
+                          customPeriodTo: e.target.value,
+                          runBacktestDisabled: false,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+              {numDaysInPeriod >= MAX_DAYS_ALLOWED && (
+                <div className={styles.error}>
+                  A momento solo permitimos backtestear hasta 45 días a la vez
+                </div>
+              )}
             </div>
             <div className={styles.backtestActions}>
               <Button
@@ -215,16 +299,25 @@ const StrategyGenerator = () => {
                 className={styles.runBacktestButton}
                 isLoading={loading}
                 onClick={handleRunBacktest}
+                isDisabled={
+                  loading ||
+                  formState.runBacktestDisabled ||
+                  numDaysInPeriod >= MAX_DAYS_ALLOWED
+                }
               >
                 Correr Backtest
               </Button>
             </div>
           </div>
           {formState.backtestResults !== null && (
-            <div>
+            <div ref={resultsRef}>
+              {/* // TODO-p1: crear gráfico (?) */}
               <div className={styles.stepTitle}>Resultados:</div>
-              <div>
-                <pre>{JSON.stringify(formState.backtestResults, null, 2)}</pre>
+              <BacktestResults results={formState.backtestResults} />
+              <div className={styles.backtestActions}>
+                <Button color="primary" className={styles.saveStrategyButton}>
+                  Guardar Estrategia
+                </Button>
               </div>
             </div>
           )}
