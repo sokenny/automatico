@@ -6,6 +6,8 @@ const Nav = () => {
       <ul>
         <li>Auto</li>
         <li>FAQ</li>
+        <li>Docs</li>
+        <li>Change Log</li>
         <li>Pricing</li>
       </ul>
       <ul>

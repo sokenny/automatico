@@ -12,6 +12,8 @@ import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
 
 // TODO-p1: Pensar como voy a hacer para que determine el software que velas usar
+// introducir CANDLE_SIZE (tamaño de vela a usar en la estrategia para calcular los indicadores (junto con el window size) Esta es la que mas le interesa a los traders)
+// introducir ITERATION_INTERVAL (tamaño de vela para iterar durante backtesting)
 
 const MAX_DAYS_ALLOWED = 45;
 
