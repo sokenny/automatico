@@ -1,0 +1,15 @@
+.container {
+  font-size: 12px;
+  opacity: 0.5;
+  font-weight: lighter;
+}
+
+.container pre {
+  width: fit-content;
+  cursor: default;
+}
+
+.tooltip {
+  max-width: 400px;
+  padding: 12px;
+}

@@ -13,12 +13,21 @@ const StrategyRow = ({ strategy, className }) => {
           USDT {strategy.IDEAL_TRADE_AMOUNT}
         </div>
       </div>
+      <div className={`${styles.dataPoint} ${styles.won}`}>
+        <div className={styles.dataPointTitle}>Balance</div>
+        <div className={styles.dataPointValue}>
+          USDT {strategy.INITIAL_BALANCE}
+        </div>
+      </div>
       <div className={`${styles.dataPoint} ${styles.lost}`}>
         <div className={styles.dataPointTitle}>Indicator</div>
         <div className={styles.dataPointValue}>
           {strategy.INDICATOR}
           {strategy.SIGNAL_TRIGGER?.period
-            ? ` (${strategy.SIGNAL_TRIGGER?.period})`
+            ? `(${strategy.SIGNAL_TRIGGER?.period})`
+            : ''}
+          {strategy.SIGNAL_TRIGGER?.target_value
+            ? strategy.SIGNAL_TRIGGER?.target_value
             : ''}
         </div>
       </div>
@@ -26,6 +35,12 @@ const StrategyRow = ({ strategy, className }) => {
         <div className={styles.dataPointTitle}>Position Type</div>
         <div className={styles.dataPointValue}>
           {strategy.SIGNAL_TRIGGER?.position_type}
+        </div>
+      </div>
+      <div className={`${styles.dataPoint} ${styles.won}`}>
+        <div className={styles.dataPointTitle}>Candle Size</div>
+        <div className={styles.dataPointValue}>
+          {strategy.CANDLE_SIZE_MINUTES} min.
         </div>
       </div>
       <div className={`${styles.dataPoint} ${styles.lost}`}>

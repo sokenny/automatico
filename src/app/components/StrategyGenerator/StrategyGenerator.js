@@ -8,12 +8,9 @@ import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPaylo
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
 import BacktestResults from '../BacktestResults/BacktestResults';
+import JsonStrategy from '../JsonStrategy/JsonStrategy';
 import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
-
-// TODO-p1: Pensar como voy a hacer para que determine el software que velas usar
-// introducir CANDLE_SIZE (tamaño de vela a usar en la estrategia para calcular los indicadores (junto con el window size) Esta es la que mas le interesa a los traders)
-// introducir ITERATION_INTERVAL (tamaño de vela para iterar durante backtesting)
 
 const MAX_DAYS_ALLOWED = 45;
 
@@ -37,10 +34,10 @@ const StrategyGenerator = () => {
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
-    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
-    strategy: null,
+    // strategy: null,
     viewDetails: false,
     backtestPeriod: null,
     customPeriodFrom: null,
@@ -89,7 +86,10 @@ const StrategyGenerator = () => {
       .then((data) => {
         if (data.success) {
           setLoading(false);
-          setFormState({ ...formState, strategy: sanitizeConfig(data.config) });
+          setFormState({
+            ...formState,
+            strategy: getStrategyToUse(sanitizeConfig(data.config)),
+          });
         }
       })
       .catch((error) => {
@@ -228,11 +228,9 @@ const StrategyGenerator = () => {
               )}
             </div>
             <div className={styles.strategyDetails}>
-              <div className={styles.jsonStrategy}>
-                {formState.viewDetails && (
-                  <pre>{JSON.stringify(formState.strategy, null, 2)}</pre>
-                )}
-              </div>
+              {formState.viewDetails && (
+                <JsonStrategy strategy={formState.strategy} />
+              )}
             </div>
             <div className={styles.stratDetailsActions}>
               <div className={styles.toggleDetails} onClick={toggleDetails}>
@@ -291,7 +289,7 @@ const StrategyGenerator = () => {
               )}
               {numDaysInPeriod >= MAX_DAYS_ALLOWED && (
                 <div className={styles.error}>
-                  A momento solo permitimos backtestear hasta 45 días a la vez
+                  A momento solo permitimos backtestear hasta 45 días a la vez.
                 </div>
               )}
             </div>

@@ -20,7 +20,7 @@ function buildBacktestRequestPayload(formState) {
   console.log('period creado! ', period);
   const payload = {
     ...defaultHiddenStrategyParams,
-    ...getStrategyToUse(config),
+    ...config,
     SIGNAL_TRIGGER: toPythonDictStyle(config.SIGNAL_TRIGGER),
     PERIOD: period,
   };
