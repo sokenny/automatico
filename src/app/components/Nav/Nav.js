@@ -4,7 +4,7 @@ const Nav = () => {
   return (
     <nav className={styles.container}>
       <ul>
-        <li>Auto</li>
+        <li>MA8</li>
         <li>FAQ</li>
         <li>Docs</li>
         <li>Change Log</li>

@@ -58,6 +58,7 @@ const BacktestResults = ({ results }) => {
         <div onClick={() => setViewResultsDetails(!viewResultsDetails)}>
           {viewResultsDetails ? 'Ocultar' : 'Ver'} detalles
         </div>
+        {/* TODO-p1: Permitir ver el log entero */}
         <div>ver log completo</div>
       </div>
     </div>

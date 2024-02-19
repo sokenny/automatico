@@ -13,7 +13,7 @@ import JsonStrategy from '../JsonStrategy/JsonStrategy';
 import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
 
-const MAX_DAYS_ALLOWED = 45;
+const MAX_DAYS_ALLOWED = 245;
 
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
@@ -163,6 +163,7 @@ const StrategyGenerator = () => {
       });
 
     toast.promise(backtestPromise, {
+      // TODO-p2: Crear un "espera estimada X segundos / minutos" en funcion del tick_interval_minutes y la cantidad de dias en el periodo
       loading: 'Analizando estrategia. Puede tardar un poco...',
       success: (data) => {
         return `Backtest finalizado con éxito`;
@@ -234,8 +235,8 @@ const StrategyGenerator = () => {
         <>
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategy}>
-              {/* TODO-p1: Refactor de StrategyGenerator para que sea mas legible */}
-              {/* TODO-p1: Poder editar el JSON de la estrategia. Con un validador del payload  */}
+              {/* TODO-p2: Refactor de StrategyGenerator para que sea mas legible */}
+              {/* TODO-p2: Poder editar la estrategia. Permitir editar el JSON o introducir campos tipo inputs  */}
               <div className={styles.stepTitle}>Estrategia creada:</div>
               <StrategyRow
                 strategy={formState.strategy}
@@ -342,17 +343,19 @@ const StrategyGenerator = () => {
                   formState.errors.strategy.length > 0
                 }
               >
+                {/* TODO-p1: guardar el backtest en la db. En una nueva tabla llamada backtests */}
                 Correr Backtest
               </Button>
             </div>
           </div>
           {formState.backtestResults !== null && (
             <div ref={resultsRef}>
-              {/* // TODO-p1: crear gráfico (?) */}
+              {/* // TODO-p2: crear gráfico (?) */}
               <div className={styles.stepTitle}>Resultados:</div>
               <BacktestResults results={formState.backtestResults} />
               <div className={styles.backtestActions}>
                 <Button color="primary" className={styles.saveStrategyButton}>
+                  {/* TODO-p1: Guardar estrategia marca el backtest como guardado en la db, y muestra un toast de exito que te ofrece ir al profile de la estrategia */}
                   Guardar Estrategia
                 </Button>
               </div>

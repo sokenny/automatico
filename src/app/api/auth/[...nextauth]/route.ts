@@ -10,8 +10,23 @@ const handler = NextAuth({
   ],
   callbacks: {
     async signIn(data:any) {
-      const { user } = data;
-      console.log('User signing in:', user);
+      const { user, profile } = data;
+      const userFromDb = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...user,
+            first_name: profile?.given_name,
+            last_name: profile?.family_name,
+          }),
+        }
+      );
+      const response = await userFromDb.text();
+      console.log('Resonse:', response);
       return true;
     },
   },
