@@ -4,6 +4,7 @@ import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
 import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
+import validateStrategy from '../../helpers/validateStrategy';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
@@ -34,16 +35,17 @@ const StrategyGenerator = () => {
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
-    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
-    // strategy: null,
+    strategy: null,
     viewDetails: false,
     backtestPeriod: null,
     customPeriodFrom: null,
     customPeriodTo: null,
     backtestResults: null,
     runBacktestDisabled: false,
+    errors: {},
   });
   const resultsRef = useRef(null);
 
@@ -86,9 +88,30 @@ const StrategyGenerator = () => {
       .then((data) => {
         if (data.success) {
           setLoading(false);
+          const strategy = getStrategyToUse(sanitizeConfig(data.config));
+          console.log('strat mila: ', strategy);
+          const errors = validateStrategy(strategy);
+          if (errors.length > 0) {
+            toast.warning('Hay algunos parámetros a corregir.');
+          } else {
+            toast.success('Estrategia creada con éxito');
+          }
           setFormState({
             ...formState,
-            strategy: getStrategyToUse(sanitizeConfig(data.config)),
+            strategy,
+            errors: {
+              ...formState.errors,
+              strategy: errors,
+            },
+          });
+        } else {
+          toast.error('Error creando estrategia');
+          setFormState({
+            ...formState,
+            errors: {
+              ...formState.errors,
+              strategy: data?.error || 'Error creando estrategia',
+            },
           });
         }
       })
@@ -100,9 +123,6 @@ const StrategyGenerator = () => {
 
     toast.promise(strategyPromise, {
       loading: 'Creando estrategia...',
-      success: (data) => {
-        return `Estrategia creada con éxito`;
-      },
       error: 'Error creando estrategia',
     });
   }
@@ -155,7 +175,6 @@ const StrategyGenerator = () => {
     setFormState({ ...formState, viewDetails: !formState.viewDetails });
   }
 
-  console.log('Loading: ', loading);
   return (
     <div>
       <div className={`${styles.aiPrompt} ${styles.step}`}>
@@ -215,6 +234,7 @@ const StrategyGenerator = () => {
         <>
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategy}>
+              {/* TODO-p1: Refactor de StrategyGenerator para que sea mas legible */}
               {/* TODO-p1: Poder editar el JSON de la estrategia. Con un validador del payload  */}
               <div className={styles.stepTitle}>Estrategia creada:</div>
               <StrategyRow
@@ -240,6 +260,22 @@ const StrategyGenerator = () => {
                 <a>Consultar documentación</a>
               </div>
             </div>
+            {typeof formState.errors.strategy == 'string' ||
+              (formState.errors.strategy.length > 0 && (
+                <div className={styles.strategyErrors}>
+                  <div className={styles.errorsTitle}>
+                    Corregí los siguientes parámetros para continuar:
+                  </div>
+                  <div className={styles.errorsList}>
+                    {formState.errors.strategy.map((error, index) => (
+                      <div key={index} className={styles.error}>
+                        <div className={styles.field}>{error.field}:</div>
+                        <div>{error.message}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
           <div className={styles.step}>
             <div className={styles.backtestPeriod}>
@@ -302,7 +338,8 @@ const StrategyGenerator = () => {
                 isDisabled={
                   loading ||
                   formState.runBacktestDisabled ||
-                  numDaysInPeriod >= MAX_DAYS_ALLOWED
+                  numDaysInPeriod >= MAX_DAYS_ALLOWED ||
+                  formState.errors.strategy.length > 0
                 }
               >
                 Correr Backtest

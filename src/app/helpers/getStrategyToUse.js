@@ -1,11 +1,13 @@
 export const defaultStrategyParams = {
   OPERATION_EXPIRY_TIME: 2500,
-  POSITION_STRUCTURE: "[{'weight': .5}, {'weight': .5}]",
+  // POSITION_STRUCTURE: "[{'weight': .5}, {'weight': .5}]",
+  POSITION_STRUCTURE: "[{'weight': 1}]",
   START_GAP_PERCENTAGE: 0,
   INCLUDE_BLACKBOX_LOGS: 1,
   UPDATE_SL_EVERY: 0,
   CANDLE_SIZE_MINUTES: 5,
   TICK_INTERVAL_MINUTES: 1,
+  LEVERAGE: 5,
 };
 
 function getStrategyToUse(generatedStrategy) {

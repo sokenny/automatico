@@ -1,5 +1,5 @@
 .layout .innerWrapper {
-  padding: 12vh 10vw;
+  padding: 8vh 10vw 12vh 10vw;
 }
 
 @media (max-width: 720px) {
