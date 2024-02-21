@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef, useEffect, useState } from 'react';
+import useStore from '../../store/index';
 import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
@@ -32,20 +33,23 @@ const mockupGeneratedStrategy = {
 
 const StrategyGenerator = () => {
   const [loading, setLoading] = useState(false);
+  const { user } = useStore();
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
-    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
-    strategy: null,
+    // strategy: null,
     viewDetails: false,
     backtestPeriod: null,
     customPeriodFrom: null,
     customPeriodTo: null,
     backtestResults: null,
     runBacktestDisabled: false,
-    errors: {},
+    errors: {
+      strategy: [],
+    },
   });
   const resultsRef = useRef(null);
 
@@ -65,8 +69,6 @@ const StrategyGenerator = () => {
         },
       })
     : null;
-
-  console.log('formState: ', formState);
 
   const canProceedToGenerate = formState.entry && formState.exit;
 
@@ -89,12 +91,11 @@ const StrategyGenerator = () => {
         if (data.success) {
           setLoading(false);
           const strategy = getStrategyToUse(sanitizeConfig(data.config));
-          console.log('strat mila: ', strategy);
           const errors = validateStrategy(strategy);
           if (errors.length > 0) {
             toast.warning('Hay algunos parámetros a corregir.');
           } else {
-            toast.success('Estrategia creada con éxito');
+            toast.success('Estrategia generada con éxito');
           }
           setFormState({
             ...formState,
@@ -105,7 +106,7 @@ const StrategyGenerator = () => {
             },
           });
         } else {
-          toast.error('Error creando estrategia');
+          toast.error('Error generando estrategia');
           setFormState({
             ...formState,
             errors: {
@@ -131,10 +132,7 @@ const StrategyGenerator = () => {
     setLoading(true);
     setFormState({ ...formState, backtestResults: null });
 
-    console.log('form strat before sending: ', formState.strategy);
     const payloadToSend = buildBacktestRequestPayload(formState);
-
-    console.log('payloadToSend: ', payloadToSend);
 
     const backtestPromise = fetch(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/backtest`,
@@ -143,14 +141,17 @@ const StrategyGenerator = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payloadToSend),
+        body: JSON.stringify({
+          userId: user.id,
+          ...payloadToSend,
+        }),
       },
     )
       .then((response) => response.json())
       .then((data) => {
         setFormState({
           ...formState,
-          backtestResults: data,
+          backtestResults: { ...data.results, backtestId: data.backtest_id },
           runBacktestDisabled: true,
         });
       })
@@ -174,6 +175,10 @@ const StrategyGenerator = () => {
 
   function toggleDetails() {
     setFormState({ ...formState, viewDetails: !formState.viewDetails });
+  }
+
+  if (!user) {
+    return 'Loading...';
   }
 
   return (
@@ -284,7 +289,6 @@ const StrategyGenerator = () => {
                 <div className={styles.stepTitle}>Período a testear:</div>
                 <BacktestPeriodsDropdown
                   onChange={(value) => {
-                    console.log('valorsito: ', value);
                     setFormState({
                       ...formState,
                       backtestPeriod: value,
@@ -343,7 +347,6 @@ const StrategyGenerator = () => {
                   formState.errors.strategy.length > 0
                 }
               >
-                {/* TODO-p1: guardar el backtest en la db. En una nueva tabla llamada backtests */}
                 Correr Backtest
               </Button>
             </div>
