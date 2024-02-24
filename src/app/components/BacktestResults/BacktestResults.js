@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import Link from 'next/link';
+import BacktestChart from '../BacktestChart/BacktestChart';
 import unixToDate from '../../helpers/unixToDate';
 import styles from './BacktestResults.module.css';
 
@@ -9,11 +11,18 @@ const BacktestResults = ({ results }) => {
     100;
   return (
     <div className={styles.container}>
+      <div>
+        <BacktestChart
+          chartData={results.chartData}
+          closedOperations={results.closed_operations}
+        />
+      </div>
       <div className={styles.tradedPeriod}>
         {unixToDate(results.traded_period.from / 1000)} -{' '}
         {unixToDate(results.traded_period.to / 1000)}
       </div>
       <div className={styles.row}>
+        {/* TODO-p1: Si entradas y salidas se van a mostrar verdes y rojas en el chart, no mostrar ganadas y perdidas verdes y rojas porque genera confusión */}
         <div className={`${styles.dataPoint} ${styles.won}`}>
           <div className={styles.dataPointTitle}># Ganadas</div>
           <div className={styles.dataPointValue}>{results.won}</div>
@@ -58,8 +67,11 @@ const BacktestResults = ({ results }) => {
         <div onClick={() => setViewResultsDetails(!viewResultsDetails)}>
           {viewResultsDetails ? 'Ocultar' : 'Ver'} detalles
         </div>
-        {/* TODO-p1: Permitir ver el log entero */}
-        <div>ver log completo</div>
+        <div>
+          <Link href={`/backtest/${results.backtestId}/log`}>
+            ver log completo
+          </Link>
+        </div>
       </div>
     </div>
   );

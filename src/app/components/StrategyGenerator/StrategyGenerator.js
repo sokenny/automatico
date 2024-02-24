@@ -19,14 +19,14 @@ const MAX_DAYS_ALLOWED = 245;
 
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
-  INDICATOR: 'RSI',
+  INDICATOR: 'CCI',
   SIGNAL_TRIGGER: {
     cross_direction: 'below_to_above',
     position_type: 'long',
-    target_value: 70,
-    period: 14,
+    target_value: 200,
+    period: 20,
   },
-  TAKE_PROFIT: 2,
+  TAKE_PROFIT: 1,
   STOP_LOSS: 1,
   MAX_WEIGHT_ALLOCATION: 1,
   IDEAL_TRADE_AMOUNT: 1000,
@@ -37,8 +37,8 @@ const StrategyGenerator = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useStore();
   const [formState, setFormState] = useState({
-    entry: 'Si BTC cruza el SMA 20, comprá 1k USD.', // lo harcodeamos para testear mas facil
-    exit: 'Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%.', // lo harcodeamos para testear mas facil
+    entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
+    exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
     strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
@@ -153,9 +153,14 @@ const StrategyGenerator = () => {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log('chart data we return:', data.chart_data);
         setFormState({
           ...formState,
-          backtestResults: { ...data.results, backtestId: data.backtest_id },
+          backtestResults: {
+            ...data.results,
+            backtestId: data.backtest_id,
+            chartData: data.chart_data,
+          },
           runBacktestDisabled: true,
         });
       })
@@ -401,7 +406,6 @@ const StrategyGenerator = () => {
           </div>
           {formState.backtestResults !== null && (
             <div ref={resultsRef}>
-              {/* // TODO-p1: crear gráfico (?) usar chart_data del backtest */}
               <div className={styles.stepTitle}>Resultados:</div>
               <BacktestResults results={formState.backtestResults} />
               <div className={styles.backtestActions}>

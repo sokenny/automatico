@@ -1,5 +1,6 @@
 'use client';
 import { signIn, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import useStore from '../../store/index';
 import { useEffect } from 'react';
 import styles from './Nav.module.css';
@@ -25,7 +26,9 @@ const Nav = () => {
   return (
     <nav className={styles.container}>
       <ul>
-        <li>MA8</li>
+        <li>
+          <Link href="/backtest">MA8</Link>
+        </li>
         <li>FAQ</li>
         <li>Docs</li>
         <li>Change Log</li>

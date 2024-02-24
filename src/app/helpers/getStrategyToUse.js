@@ -3,7 +3,7 @@ export const defaultStrategyParams = {
   // POSITION_STRUCTURE: "[{'weight': .5}, {'weight': .5}]",
   POSITION_STRUCTURE: "[{'weight': 1}]",
   START_GAP_PERCENTAGE: 0,
-  INCLUDE_BLACKBOX_LOGS: 1,
+  INCLUDE_BLACKBOX_LOGS: 0,
   UPDATE_SL_EVERY: 0,
   CANDLE_SIZE_MINUTES: 5,
   TICK_INTERVAL_MINUTES: 1,

@@ -1,0 +1,9 @@
+.container {
+    font-size: 14px;
+    max-width: 750px;
+}
+
+.container pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
