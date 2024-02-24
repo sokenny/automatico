@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
 import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ const mockupGeneratedStrategy = {
 };
 
 const StrategyGenerator = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user } = useStore();
   const [formState, setFormState] = useState({
@@ -52,6 +54,8 @@ const StrategyGenerator = () => {
     },
   });
   const resultsRef = useRef(null);
+
+  console.log('formState--: ', formState);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {
@@ -170,6 +174,50 @@ const StrategyGenerator = () => {
         return `Backtest finalizado con éxito`;
       },
       error: 'Error corriendo backtest',
+    });
+  }
+
+  async function handleSaveStrategy() {
+    setLoading(true);
+
+    const payload = {
+      backtestId: formState.backtestResults.backtestId,
+      userId: user.id,
+      name: 'Strategy from backtest ' + formState.backtestResults.backtestId,
+      config: formState.strategy,
+    };
+
+    const saveStrategyPromise = fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/strategy`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success('Estrategia guardada con éxito');
+          setFormState({ ...formState, createdStrategyId: data.strategy_id });
+          router.push(`/strategy/${data.strategy_id}`);
+        } else {
+          toast.error('Error guardando estrategia');
+        }
+      })
+      .catch((error) => {
+        console.error('Error guardando estrategia: ', error);
+        throw new Error('Error guardando estrategia');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    toast.promise(saveStrategyPromise, {
+      loading: 'Guardando estrategia...',
+      error: 'Error guardando estrategia',
     });
   }
 
@@ -338,7 +386,7 @@ const StrategyGenerator = () => {
               <Button
                 color="primary"
                 className={styles.runBacktestButton}
-                isLoading={loading}
+                isLoading={loading && !formState?.createdStrategyId}
                 onClick={handleRunBacktest}
                 isDisabled={
                   loading ||
@@ -353,12 +401,17 @@ const StrategyGenerator = () => {
           </div>
           {formState.backtestResults !== null && (
             <div ref={resultsRef}>
-              {/* // TODO-p2: crear gráfico (?) */}
+              {/* // TODO-p1: crear gráfico (?) usar chart_data del backtest */}
               <div className={styles.stepTitle}>Resultados:</div>
               <BacktestResults results={formState.backtestResults} />
               <div className={styles.backtestActions}>
-                <Button color="primary" className={styles.saveStrategyButton}>
-                  {/* TODO-p1: Guardar estrategia marca el backtest como guardado en la db, y muestra un toast de exito que te ofrece ir al profile de la estrategia */}
+                <Button
+                  color="primary"
+                  className={styles.saveStrategyButton}
+                  onClick={handleSaveStrategy}
+                  isDisabled={loading}
+                  isLoading={loading}
+                >
                   Guardar Estrategia
                 </Button>
               </div>
