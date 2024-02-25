@@ -30,12 +30,12 @@ function getPeriodForBacktest({ period, customDates }) {
         startDate = new Date(customDates.from);
         endDate = new Date(customDates.to);
       } else {
-        console.error("Custom dates are required for 'custom' period.");
+        console.log("Custom dates are required for 'custom' period.");
         return "['Invalid', 'Invalid']"; // Handle as needed
       }
       break;
     default:
-      console.error('Invalid period specified.');
+      console.log('Invalid period specified.');
       return "['Invalid', 'Invalid']"; // Handle as needed
   }
 

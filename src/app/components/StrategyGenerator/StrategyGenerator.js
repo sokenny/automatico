@@ -340,6 +340,7 @@ const StrategyGenerator = () => {
             <div className={styles.backtestPeriod}>
               <div className={styles.titleWrapper}>
                 <div className={styles.stepTitle}>Período a testear:</div>
+                {/* TODO-p1: Que se configure el tick interval acá con otro dropdown */}
                 <BacktestPeriodsDropdown
                   onChange={(value) => {
                     setFormState({

@@ -23,12 +23,12 @@ function getDaysInFormPeriod({ period, customDates }) {
         startDate = new Date(customDates.from);
         endDate = new Date(customDates.to);
       } else {
-        console.error("Custom dates are required for 'custom' period.");
+        console.log("Custom dates are required for 'custom' period.");
         return null; // Handle as needed
       }
       break;
     default:
-      console.error('Invalid period specified.');
+      console.log('Invalid period specified.');
       return null; // Handle as needed
   }
 

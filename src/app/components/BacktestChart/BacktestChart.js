@@ -25,7 +25,15 @@ import colors from '../../contants/colors';
 import unixToShortDate from '../../helpers/unixToShortDate';
 import styles from './BacktestChart.module.css';
 
-// TODO-p1: Refactor de todo esto para que se entienda más - Considerar cambiar el nombre chart data
+function getTooltipLabel(item) {
+  if (item?.raw?.type === 'entry') {
+    return `Bought ${item.raw.quantity}`;
+  }
+  if (item?.raw?.type === 'exit') {
+    return `Sold ${item.raw.quantity} | PNL: ${item.raw.pnl + ' (USDT)'}`;
+  }
+  return item.formattedValue;
+}
 
 function getChartOptions(defaultOptions, customOptions) {
   const optionsToReturn = { ...defaultOptions };
@@ -79,7 +87,7 @@ const defaultOptions = {
       enabled: true,
       callbacks: {
         title: (item) => unixToShortDate(item[0].label),
-        label: (item) => item.formattedValue,
+        label: getTooltipLabel,
       },
       titleColor: '#000',
       bodyColor: colors.linkBlue,
@@ -136,11 +144,14 @@ function prepareChartData(pricePoints, operations) {
       x: operation.open_time,
       y: parseFloat(operation.open_price),
       type: 'entry',
+      quantity: operation.quantity,
     });
     trades.push({
       x: operation.close_time,
       y: parseFloat(operation.exit_price),
       type: 'exit',
+      quantity: operation.quantity,
+      pnl: operation.pnl,
     });
   });
 
@@ -150,6 +161,8 @@ function prepareChartData(pricePoints, operations) {
       x: trade.x,
       y: parseFloat(trade.y),
       type: trade.type,
+      quantity: trade.quantity,
+      pnl: trade.pnl,
     })),
     backgroundColor: trades.map((trade) =>
       trade.type === 'entry' ? colors.green : colors.error,
@@ -175,4 +188,4 @@ const BacktestChart = ({ chartData, closedOperations, showScales = false }) => {
   );
 };
 
-export default BacktestChart;
+export default React.memo(BacktestChart);

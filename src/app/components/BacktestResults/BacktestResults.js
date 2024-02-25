@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BacktestChart from '../BacktestChart/BacktestChart';
 import unixToDate from '../../helpers/unixToDate';
@@ -11,6 +11,16 @@ const BacktestResults = ({ results }) => {
     100;
   return (
     <div className={styles.container}>
+      <div className={styles.references}>
+        <div className={`${styles.reference} ${styles.entry}`}>
+          <div className={styles.color} />
+          <div>Position opened</div>
+        </div>
+        <div className={`${styles.reference} ${styles.exit}`}>
+          <div className={styles.color} />
+          <div>Position closed</div>
+        </div>
+      </div>
       <div>
         <BacktestChart
           chartData={results.chartData}
@@ -22,12 +32,11 @@ const BacktestResults = ({ results }) => {
         {unixToDate(results.traded_period.to / 1000)}
       </div>
       <div className={styles.row}>
-        {/* TODO-p1: Si entradas y salidas se van a mostrar verdes y rojas en el chart, no mostrar ganadas y perdidas verdes y rojas porque genera confusión */}
-        <div className={`${styles.dataPoint} ${styles.won}`}>
+        <div className={styles.dataPoint}>
           <div className={styles.dataPointTitle}># Ganadas</div>
           <div className={styles.dataPointValue}>{results.won}</div>
         </div>
-        <div className={`${styles.dataPoint} ${styles.lost}`}>
+        <div className={styles.dataPoint}>
           <div className={styles.dataPointTitle}># Perdidas</div>
           <div className={styles.dataPointValue}>{results.lost}</div>
         </div>
@@ -60,7 +69,7 @@ const BacktestResults = ({ results }) => {
       </div>
       {viewResultsDetails && (
         <div className={styles.resultDetails}>
-          <pre>{JSON.stringify(results, null, 2)}</pre>
+          <pre>{JSON.stringify({ ...results, chartData: '...' }, null, 2)}</pre>
         </div>
       )}
       <div className={styles.viewActions}>
