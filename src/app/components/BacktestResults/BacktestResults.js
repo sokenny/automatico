@@ -11,16 +11,6 @@ const BacktestResults = ({ results }) => {
     100;
   return (
     <div className={styles.container}>
-      <div className={styles.references}>
-        <div className={`${styles.reference} ${styles.entry}`}>
-          <div className={styles.color} />
-          <div>Position opened</div>
-        </div>
-        <div className={`${styles.reference} ${styles.exit}`}>
-          <div className={styles.color} />
-          <div>Position closed</div>
-        </div>
-      </div>
       <div>
         <BacktestChart
           chartData={results.chartData}

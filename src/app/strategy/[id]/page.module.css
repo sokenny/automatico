@@ -1,0 +1,30 @@
+.container {
+    max-width: 900px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.colLeft {
+    margin-right: 8px;
+}
+
+.title {
+    font-size: 32px;
+}
+
+.colRight {
+    margin-left: 16px;
+}
+
+.strategyConfig {
+    margin-bottom: 32px;
+}
+
+.backtests {
+    /* max-width:  ; */
+}

@@ -29,9 +29,9 @@ const Nav = () => {
         <li>
           <Link href="/backtest">MA8</Link>
         </li>
-        <li>FAQ</li>
+        {/* <li>FAQ</li> */}
         <li>Docs</li>
-        <li>Change Log</li>
+        {/* <li>Change Log</li> */}
         <li>Pricing</li>
       </ul>
       <ul>

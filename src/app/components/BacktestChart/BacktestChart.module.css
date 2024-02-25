@@ -1,0 +1,27 @@
+.references {
+  display: flex;
+  align-items: center;
+  font-weight: 300;
+}
+
+.reference {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-right: 16px;
+}
+
+.reference .color {
+  width: 8px;
+  height: 8px;
+  border-radius: 5px;
+  margin-right: 4px;
+}
+
+.reference.entry .color {
+  background-color: var(--green);
+}
+
+.reference.exit .color {
+  background-color: var(--error);
+}

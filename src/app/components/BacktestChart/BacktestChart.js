@@ -180,10 +180,22 @@ function prepareChartData(pricePoints, operations) {
 const BacktestChart = ({ chartData, closedOperations, showScales = false }) => {
   return (
     <div className={styles.BacktestChart}>
-      <Line
-        data={prepareChartData(chartData, closedOperations)}
-        options={getChartOptions(defaultOptions, { showScales })}
-      />
+      <div className={styles.references}>
+        <div className={`${styles.reference} ${styles.entry}`}>
+          <div className={styles.color} />
+          <div>Position opened</div>
+        </div>
+        <div className={`${styles.reference} ${styles.exit}`}>
+          <div className={styles.color} />
+          <div>Position closed</div>
+        </div>
+      </div>
+      <div>
+        <Line
+          data={prepareChartData(chartData, closedOperations)}
+          options={getChartOptions(defaultOptions, { showScales })}
+        />
+      </div>
     </div>
   );
 };
