@@ -1,0 +1,47 @@
+.input, .select {
+  width: 150px;
+  margin-right: 8px;
+}
+
+.input > div > div, .select button {
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.input label {
+  color: black;
+}
+
+.input input::placeholder {
+  color: rgba(0, 0, 0);
+  opacity: 0.15;
+}
+
+.row {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.tooltip {
+  max-width: 250px;
+  padding: 12px;
+}
+
+.label {
+  display: flex;
+}
+
+.label .iIcon {
+  width: 8px;
+  height: 8px;
+  font-size: 7px;
+  font-weight: 600;
+  margin-left: 2px;
+  color: white;
+  background-color: var(--linkBlue);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

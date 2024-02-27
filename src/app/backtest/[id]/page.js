@@ -45,6 +45,7 @@ export default async function BacktestPage({ params }) {
         {/* <div>{JSON.stringify(backtest)}</div> */}
         <div className={styles.colRight}>{/* <HeaderActions /> */}</div>
       </div>
+      {/* TODO-p1: Cuando esten los StrategyConfigFields listos, tenerlos aca para ver el config de el backtest */}
       <div className={styles.results}>
         <div className={styles.chart}>
           <BacktestChart

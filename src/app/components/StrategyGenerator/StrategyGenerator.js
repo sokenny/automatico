@@ -12,6 +12,7 @@ import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
 import BacktestResults from '../BacktestResults/BacktestResults';
 import JsonStrategy from '../JsonStrategy/JsonStrategy';
+import StrategyConfigFields from '../StrategyConfigFields/StrategyConfigFields';
 import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
 
@@ -296,20 +297,22 @@ const StrategyGenerator = () => {
               {/* TODO-p2: Refactor de StrategyGenerator para que sea mas legible */}
               {/* TODO-p2: Poder editar la estrategia. Permitir editar el JSON o introducir campos tipo inputs  */}
               <div className={styles.stepTitle}>Estrategia creada:</div>
-              <StrategyRow
+              {/* <StrategyRow
                 strategy={formState.strategy}
                 className={styles.strategyRow}
-              />
-              {!formState.viewDetails && (
+              /> */}
+              {/* {!formState.viewDetails && (
                 <div className={styles.strategyPreview}>
                   {JSON.stringify(formState.strategy, null, 2)}
                 </div>
-              )}
+              )} */}
             </div>
             <div className={styles.strategyDetails}>
+              {/* TODO-p1: Crear strategy config fields component */}
               {formState.viewDetails && (
                 <JsonStrategy strategy={formState.strategy} />
               )}
+              <StrategyConfigFields strategy={formState.strategy} />
             </div>
             <div className={styles.stratDetailsActions}>
               <div className={styles.toggleDetails} onClick={toggleDetails}>
