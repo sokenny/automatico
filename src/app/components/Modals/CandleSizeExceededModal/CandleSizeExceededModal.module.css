@@ -1,0 +1,12 @@
+.title {
+  font-weight: 600;
+  display: flex;
+}
+
+.body span {
+  color: var(--linkBlue);
+}
+
+.button {
+  border-radius: 4px;
+}

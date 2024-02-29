@@ -48,6 +48,7 @@ export default async function StrategyPage({ params }) {
       </div>
       {backtestRows.length > 0 && (
         <div className={styles.backtests}>
+          <h3 className={styles.sectionTitle}>Backtests</h3>
           <BacktestsTable rows={backtestRows} />
         </div>
       )}

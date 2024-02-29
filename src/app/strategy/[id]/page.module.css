@@ -28,3 +28,8 @@
 .backtests {
     /* max-width:  ; */
 }
+
+.sectionTitle {
+    font-size: 24px;
+    margin-bottom: 12px;
+}

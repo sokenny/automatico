@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
-import { Button } from '@nextui-org/react';
+import { Button, useDisclosure } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
 import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
@@ -12,11 +12,13 @@ import setMissingDefaults from '../../helpers/setMissingDefaults';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
+import CandleSizeExceededModal from '../Modals/CandleSizeExceededModal/CandleSizeExceededModal';
 import BacktestResults from '../BacktestResults/BacktestResults';
 import StrategyConfigFields from '../StrategyConfigFields/StrategyConfigFields';
 import styles from './StrategyGenerator.module.css';
 
-const MAX_DAYS_ALLOWED = 245;
+const MAX_CANDLES_ALLOWED = 50000;
+const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
@@ -36,14 +38,19 @@ const mockupGeneratedStrategy = {
 const StrategyGenerator = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const {
+    isOpen: isCandleModalOpen,
+    onOpen: onOpenCandleModal,
+    onOpenChange: onOpenCandleModalChange,
+  } = useDisclosure();
   const { user } = useStore();
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
-    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
-    strategy: null,
+    // strategy: null,
     backtestPeriod: 'week',
     customPeriodFrom: null,
     customPeriodTo: null,
@@ -52,6 +59,7 @@ const StrategyGenerator = () => {
     errors: {
       strategy: [],
     },
+    isValidStrategy: false,
   });
   const resultsRef = useRef(null);
 
@@ -134,18 +142,20 @@ const StrategyGenerator = () => {
   async function handleRunBacktest() {
     // check amount of candles that will be iterated, if necessary pop modal
     console.log('numdaysinperiod: ', numDaysInPeriod);
-    const candlesToAnalyse = getTotalCandlesToAnalyse({
-      days: numDaysInPeriod,
-      tickSize: formState.strategy?.TICK_INTERVAL_MINUTES,
-    });
 
     console.log('candlesToAnalyse: ', candlesToAnalyse);
+    if (candlesToAnalyse > MAX_CANDLES_ALLOWED) {
+      onOpenCandleModal();
+      return;
+    }
 
     setLoading(true);
     setFormState({ ...formState, backtestResults: null });
 
+    const estimatedWait = Math.round(
+      candlesToAnalyse / AVG_CANDLES_PROCESSED_PER_SECOND,
+    );
     const payloadToSend = buildBacktestRequestPayload(formState);
-
     const backtestPromise = fetch(
       `${process.env.NEXT_PUBLIC_API_ENDPOINT}/backtest`,
       {
@@ -181,8 +191,10 @@ const StrategyGenerator = () => {
       });
 
     toast.promise(backtestPromise, {
-      // TODO-p2: Crear un "espera estimada X segundos / minutos" en funcion del tick_interval_minutes y la cantidad de dias en el periodo
-      loading: 'Analizando estrategia. Puede tardar un poco...',
+      loading:
+        'Analizando estrategia. Espera estimada:  ' +
+        estimatedWait +
+        ' segundos...',
       success: (data) => {
         return `Backtest finalizado con éxito`;
       },
@@ -234,12 +246,25 @@ const StrategyGenerator = () => {
     });
   }
 
+  const candlesToAnalyse = getTotalCandlesToAnalyse({
+    days: numDaysInPeriod,
+    tickSize: formState.strategy?.TICK_INTERVAL_MINUTES,
+  });
+
   if (!user) {
     return 'Loading...';
   }
 
   return (
     <div>
+      <CandleSizeExceededModal
+        isOpen={isCandleModalOpen}
+        onOpenChange={onOpenCandleModalChange}
+        candlesSize={candlesToAnalyse}
+        maxCandlesAllowed={MAX_CANDLES_ALLOWED}
+        tickSize={formState.strategy?.TICK_INTERVAL_MINUTES}
+        totalDays={numDaysInPeriod}
+      />
       <div className={`${styles.aiPrompt} ${styles.step}`}>
         <div className={styles.entryAndExit}>
           <div className={styles.step}>
@@ -303,8 +328,6 @@ const StrategyGenerator = () => {
               <StrategyConfigFields
                 strategy={formState.strategy}
                 isEditing={formState.backtestResults === null}
-                // formState={formState}
-                // setFormState={setFormState}
                 setStrategy={(strategy) =>
                   setFormState({
                     ...formState,
@@ -312,6 +335,12 @@ const StrategyGenerator = () => {
                       ...formState.strategy,
                       ...strategy,
                     },
+                  })
+                }
+                onIsValidChange={(isValid) =>
+                  setFormState({
+                    ...formState,
+                    isValidStrategy: isValid,
                   })
                 }
               />
@@ -347,15 +376,17 @@ const StrategyGenerator = () => {
                 formState={formState}
                 setFormState={setFormState}
               />
-              {numDaysInPeriod >= MAX_DAYS_ALLOWED && (
+              {candlesToAnalyse >= MAX_CANDLES_ALLOWED && (
                 <div className={styles.error}>
-                  A momento solo permitimos backtestear hasta 45 días a la vez.
+                  A momento solo permitimos analizando hasta{' '}
+                  {MAX_CANDLES_ALLOWED / 1000}k velas por cada backtest. Por tu
+                  configuración actual, estarías analizando{' '}
+                  {candlesToAnalyse / 1000}k velas.
                 </div>
               )}
             </div>
             <div className={styles.backtestActions}>
-              {/* TODO-p1: Do not allow running backtest if the strategy config has errors */}
-              {/* TODO-p2: Modal warning si va a correr un backtest con muchas velas (periodo largo y tick size bajo) */}
+              {/* TODO-p2: Add 'share strategy' button */}
               <Button
                 color="primary"
                 className={styles.runBacktestButton}
@@ -364,8 +395,8 @@ const StrategyGenerator = () => {
                 isDisabled={
                   loading ||
                   formState.runBacktestDisabled ||
-                  numDaysInPeriod >= MAX_DAYS_ALLOWED ||
-                  formState.errors.strategy.length > 0
+                  formState.errors.strategy.length > 0 ||
+                  !formState.isValidStrategy
                 }
               >
                 Correr Backtest

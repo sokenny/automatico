@@ -89,7 +89,12 @@ const positionTypes = [
   },
 ];
 
-const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
+const StrategyConfigFields = ({
+  strategy,
+  setStrategy,
+  onIsValidChange = () => {},
+  isEditing = true,
+}) => {
   const isMACrossType = ['EMA', 'SMA'].includes(strategy.INDICATOR);
 
   const defaultInputProps = {
@@ -118,6 +123,41 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
     );
   }
 
+  const validations = {
+    'PAIR': isValidPair(strategy.PAIR),
+    'IDEAL_TRADE_AMOUNT': isPositiveInteger(strategy.IDEAL_TRADE_AMOUNT),
+    'INITIAL_BALANCE': isPositiveInteger(strategy.INITIAL_BALANCE),
+    'MAX_WEIGHT_ALLOCATION': isPositiveInteger(strategy.MAX_WEIGHT_ALLOCATION),
+    'LEVERAGE': isValidLeverage(strategy.LEVERAGE),
+    'TAKE_PROFIT': isPositiveInteger(strategy.TAKE_PROFIT),
+    'STOP_LOSS': isPositiveInteger(strategy.STOP_LOSS),
+    'OPERATION_EXPIRY_TIME': isPositiveOrZeroInteger(
+      strategy.OPERATION_EXPIRY_TIME,
+    ),
+    'START_GAP_PERCENTAGE': isPositiveOrZeroInteger(
+      strategy.START_GAP_PERCENTAGE,
+    ),
+    'SIGNAL_TRIGGER.period': isPositiveInteger(strategy.SIGNAL_TRIGGER?.period),
+    'SIGNAL_TRIGGER.cross_percentage': isNumber(
+      strategy.SIGNAL_TRIGGER?.cross_percentage,
+    ),
+    'SIGNAL_TRIGGER.target_value': isNumber(
+      strategy.SIGNAL_TRIGGER?.target_value,
+    ),
+  };
+
+  const formIsValid = Object.values(validations).every((v, i) => {
+    const key = Object.keys(validations)[i];
+    if (key === 'SIGNAL_TRIGGER.cross_percentage' && !isMACrossType)
+      return true;
+    if (key === 'SIGNAL_TRIGGER.target_value' && !isMACrossType) return true;
+    return v;
+  });
+
+  useEffect(() => {
+    onIsValidChange(formIsValid);
+  }, [formIsValid]);
+
   return (
     <div className={`${styles.container} ${isEditing ? styles.editing : ''}`}>
       <div className={styles.row}>
@@ -128,7 +168,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
           labelPlacement={'outside'}
           onChange={(e) => setStrategy({ ...strategy, PAIR: e.target.value })}
           value={strategy.PAIR}
-          isInvalid={!isValidPair(strategy.PAIR)}
+          isInvalid={!validations['PAIR']}
         />
         <Input
           {...defaultInputProps}
@@ -144,7 +184,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, IDEAL_TRADE_AMOUNT: e.target.value })
           }
           value={strategy.IDEAL_TRADE_AMOUNT}
-          isInvalid={!isPositiveInteger(strategy.IDEAL_TRADE_AMOUNT)}
+          isInvalid={!validations['IDEAL_TRADE_AMOUNT']}
         />
         <Input
           {...defaultInputProps}
@@ -160,7 +200,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, INITIAL_BALANCE: e.target.value })
           }
           value={strategy.INITIAL_BALANCE}
-          isInvalid={!isPositiveInteger(strategy.INITIAL_BALANCE)}
+          isInvalid={!validations['INITIAL_BALANCE']}
         />
         <Input
           {...defaultInputProps}
@@ -174,7 +214,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             })
           }
           value={strategy.MAX_WEIGHT_ALLOCATION}
-          isInvalid={!isPositiveInteger(strategy.MAX_WEIGHT_ALLOCATION)}
+          isInvalid={!validations['MAX_WEIGHT_ALLOCATION']}
         />
         <Input
           {...defaultInputProps}
@@ -185,7 +225,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, LEVERAGE: e.target.value })
           }
           value={strategy.LEVERAGE}
-          isInvalid={!isValidLeverage(strategy.LEVERAGE)}
+          isInvalid={!validations['LEVERAGE']}
         />
       </div>
       <div className={styles.row}>
@@ -222,7 +262,10 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
           disallowEmptySelection
           selectedKeys={[strategy.INDICATOR]}
           onChange={(e) => {
-            setStrategy({ ...strategy, INDICATOR: e.target.value });
+            setStrategy({
+              ...strategy,
+              INDICATOR: e.target.value,
+            });
           }}
           selectionMode="single"
         >
@@ -251,10 +294,11 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             })
           }
           value={strategy.SIGNAL_TRIGGER?.period}
-          isInvalid={!isPositiveInteger(strategy.SIGNAL_TRIGGER?.period)}
+          isInvalid={!validations['SIGNAL_TRIGGER.period']}
         />
         {isMACrossType ? (
           <Input
+            key={strategy.INDICATOR}
             {...defaultInputProps}
             type="number"
             label={withTooltip(
@@ -267,15 +311,16 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
                 ...strategy,
                 SIGNAL_TRIGGER: {
                   ...strategy.SIGNAL_TRIGGER,
-                  target_value: e.target.value,
+                  cross_percentage: e.target.value,
                 },
               })
             }
             value={strategy.SIGNAL_TRIGGER?.cross_percentage}
-            isInvalid={!isNumber(strategy.SIGNAL_TRIGGER?.cross_percentage)}
+            isInvalid={!validations['SIGNAL_TRIGGER.cross_percentage']}
           />
         ) : (
           <Input
+            key={strategy.INDICATOR}
             {...defaultInputProps}
             type="number"
             label={withTooltip(
@@ -293,7 +338,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
               })
             }
             value={strategy.SIGNAL_TRIGGER?.target_value}
-            isInvalid={!isNumber(strategy.SIGNAL_TRIGGER?.target_value)}
+            isInvalid={!validations['SIGNAL_TRIGGER.target_value']}
           />
         )}
         <Select
@@ -370,7 +415,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, TAKE_PROFIT: e.target.value })
           }
           value={strategy.TAKE_PROFIT}
-          isInvalid={!isPositiveInteger(strategy.TAKE_PROFIT)}
+          isInvalid={!validations['TAKE_PROFIT']}
         />
         <Input
           {...defaultInputProps}
@@ -381,7 +426,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, STOP_LOSS: e.target.value })
           }
           value={strategy.STOP_LOSS}
-          isInvalid={!isPositiveInteger(strategy.STOP_LOSS)}
+          isInvalid={!validations['STOP_LOSS']}
         />
       </div>
       <div className={styles.row}>
@@ -394,7 +439,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             setStrategy({ ...strategy, START_GAP_PERCENTAGE: e.target.value })
           }
           value={strategy.START_GAP_PERCENTAGE}
-          isInvalid={!isPositiveOrZeroInteger(strategy.START_GAP_PERCENTAGE)}
+          isInvalid={!validations['START_GAP_PERCENTAGE']}
         />
         <Input
           {...defaultInputProps}
@@ -408,7 +453,7 @@ const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
             })
           }
           value={strategy.OPERATION_EXPIRY_TIME}
-          isInvalid={!isPositiveOrZeroInteger(strategy.OPERATION_EXPIRY_TIME)}
+          isInvalid={!validations['OPERATION_EXPIRY_TIME']}
         />
       </div>
     </div>
