@@ -6,7 +6,9 @@ import { Button } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
 import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
+import getTotalCandlesToAnalyse from '../../helpers/getTotalCandlesToAnalyse';
 import validateStrategy from '../../helpers/validateStrategy';
+import setMissingDefaults from '../../helpers/setMissingDefaults';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
@@ -38,11 +40,10 @@ const StrategyGenerator = () => {
   const [formState, setFormState] = useState({
     entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
     exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
-    strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
+    // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     // entry: '',
     // exit: '',
-    // strategy: null,
-    viewDetails: false,
+    strategy: null,
     backtestPeriod: 'week',
     customPeriodFrom: null,
     customPeriodTo: null,
@@ -58,7 +59,6 @@ const StrategyGenerator = () => {
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {
-      // Scroll to the resultsRef element
       resultsRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [formState.backtestResults]);
@@ -102,11 +102,7 @@ const StrategyGenerator = () => {
           }
           setFormState({
             ...formState,
-            strategy: {
-              // We set some default values here but the spread operator will override them if the strategy has them
-              TICK_INTERVAL_MINUTES: 1,
-              ...strategy,
-            },
+            strategy: setMissingDefaults(strategy),
             errors: {
               ...formState.errors,
               strategy: errors,
@@ -136,6 +132,15 @@ const StrategyGenerator = () => {
   }
 
   async function handleRunBacktest() {
+    // check amount of candles that will be iterated, if necessary pop modal
+    console.log('numdaysinperiod: ', numDaysInPeriod);
+    const candlesToAnalyse = getTotalCandlesToAnalyse({
+      days: numDaysInPeriod,
+      tickSize: formState.strategy?.TICK_INTERVAL_MINUTES,
+    });
+
+    console.log('candlesToAnalyse: ', candlesToAnalyse);
+
     setLoading(true);
     setFormState({ ...formState, backtestResults: null });
 
@@ -229,10 +234,6 @@ const StrategyGenerator = () => {
     });
   }
 
-  function toggleDetails() {
-    setFormState({ ...formState, viewDetails: !formState.viewDetails });
-  }
-
   if (!user) {
     return 'Loading...';
   }
@@ -297,13 +298,23 @@ const StrategyGenerator = () => {
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategy}>
               <div className={styles.stepTitle}>Estrategia creada:</div>
-              {/* <StrategyRow
-                strategy={formState.strategy}
-                className={styles.strategyRow}
-              /> */}
             </div>
             <div className={styles.strategyDetails}>
-              <StrategyConfigFields strategy={formState.strategy} />
+              <StrategyConfigFields
+                strategy={formState.strategy}
+                isEditing={formState.backtestResults === null}
+                // formState={formState}
+                // setFormState={setFormState}
+                setStrategy={(strategy) =>
+                  setFormState({
+                    ...formState,
+                    strategy: {
+                      ...formState.strategy,
+                      ...strategy,
+                    },
+                  })
+                }
+              />
             </div>
             <div className={styles.stratDetailsActions}>
               <div className={styles.viewDocs}>
@@ -343,7 +354,8 @@ const StrategyGenerator = () => {
               )}
             </div>
             <div className={styles.backtestActions}>
-              {/* TODO-p1: Modal warning si va a correr un backtest con muchas velas (periodo largo y tick size bajo) */}
+              {/* TODO-p1: Do not allow running backtest if the strategy config has errors */}
+              {/* TODO-p2: Modal warning si va a correr un backtest con muchas velas (periodo largo y tick size bajo) */}
               <Button
                 color="primary"
                 className={styles.runBacktestButton}

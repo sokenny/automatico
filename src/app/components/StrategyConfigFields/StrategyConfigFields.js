@@ -18,7 +18,7 @@ function isPositiveOrZeroInteger(value) {
 }
 
 function isValidLeverage(value) {
-  return value >= 1 && value <= 50;
+  return value >= 0 && value <= 50;
 }
 
 function isNumber(value) {
@@ -89,33 +89,8 @@ const positionTypes = [
   },
 ];
 
-const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
-  const [formState, setFormState] = useState(strategy);
-  const isMACrossType = ['EMA', 'SMA'].includes(formState.INDICATOR);
-  const [selectedCandleSize, setSelectedCandleSize] = useState(
-    formState.CANDLE_SIZE_MINUTES.toString(),
-  );
-  const [selectedIndicator, setSelectedIndicator] = useState(
-    formState.INDICATOR.toString(),
-  );
-  const [selectedCrossDirection, setSelectedCrossDirection] = useState(
-    formState.SIGNAL_TRIGGER?.cross_direction.toString(),
-  );
-  const [selectedPositionType, setSelectedPositionType] = useState(
-    formState.SIGNAL_TRIGGER?.position_type.toString(),
-  );
-
-  useEffect(() => {
-    setSelectedCandleSize(formState.CANDLE_SIZE_MINUTES.toString());
-  }, [formState.CANDLE_SIZE_MINUTES]);
-
-  useEffect(() => {
-    setSelectedIndicator(formState.INDICATOR);
-  }, [formState.INDICATOR]);
-
-  useEffect(() => {
-    setSelectedCrossDirection(formState.SIGNAL_TRIGGER?.cross_direction);
-  }, [formState.SIGNAL_TRIGGER?.cross_direction]);
+const StrategyConfigFields = ({ strategy, setStrategy, isEditing = true }) => {
+  const isMACrossType = ['EMA', 'SMA'].includes(strategy.INDICATOR);
 
   const defaultInputProps = {
     disabled: false,
@@ -151,9 +126,9 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           type="text"
           label={withTooltip(<>Pair</>, 'PAIR')}
           labelPlacement={'outside'}
-          onChange={(e) => setFormState({ ...formState, PAIR: e.target.value })}
-          value={formState.PAIR}
-          isInvalid={!isValidPair(formState.PAIR)}
+          onChange={(e) => setStrategy({ ...strategy, PAIR: e.target.value })}
+          value={strategy.PAIR}
+          isInvalid={!isValidPair(strategy.PAIR)}
         />
         <Input
           {...defaultInputProps}
@@ -166,10 +141,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
             </div>
           }
           onChange={(e) =>
-            setFormState({ ...formState, IDEAL_TRADE_AMOUNT: e.target.value })
+            setStrategy({ ...strategy, IDEAL_TRADE_AMOUNT: e.target.value })
           }
-          value={formState.IDEAL_TRADE_AMOUNT}
-          isInvalid={!isPositiveInteger(formState.IDEAL_TRADE_AMOUNT)}
+          value={strategy.IDEAL_TRADE_AMOUNT}
+          isInvalid={!isPositiveInteger(strategy.IDEAL_TRADE_AMOUNT)}
         />
         <Input
           {...defaultInputProps}
@@ -182,10 +157,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
             </div>
           }
           onChange={(e) =>
-            setFormState({ ...formState, INITIAL_BALANCE: e.target.value })
+            setStrategy({ ...strategy, INITIAL_BALANCE: e.target.value })
           }
-          value={formState.INITIAL_BALANCE}
-          isInvalid={!isPositiveInteger(formState.INITIAL_BALANCE)}
+          value={strategy.INITIAL_BALANCE}
+          isInvalid={!isPositiveInteger(strategy.INITIAL_BALANCE)}
         />
         <Input
           {...defaultInputProps}
@@ -193,13 +168,13 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Max. allocation</>, 'MAX_WEIGHT_ALLOCATION')}
           placeholder="1"
           onChange={(e) =>
-            setFormState({
-              ...formState,
+            setStrategy({
+              ...strategy,
               MAX_WEIGHT_ALLOCATION: e.target.value,
             })
           }
-          value={formState.MAX_WEIGHT_ALLOCATION}
-          isInvalid={!isPositiveInteger(formState.MAX_WEIGHT_ALLOCATION)}
+          value={strategy.MAX_WEIGHT_ALLOCATION}
+          isInvalid={!isPositiveInteger(strategy.MAX_WEIGHT_ALLOCATION)}
         />
         <Input
           {...defaultInputProps}
@@ -207,10 +182,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Leverage</>, 'LEVERAGE')}
           placeholder="1"
           onChange={(e) =>
-            setFormState({ ...formState, LEVERAGE: e.target.value })
+            setStrategy({ ...strategy, LEVERAGE: e.target.value })
           }
-          value={formState.LEVERAGE}
-          isInvalid={!isValidLeverage(formState.LEVERAGE)}
+          value={strategy.LEVERAGE}
+          isInvalid={!isValidLeverage(strategy.LEVERAGE)}
         />
       </div>
       <div className={styles.row}>
@@ -220,9 +195,12 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Candle size</>, 'CANDLE_SIZE_MINUTES')}
           placeholder="Select a candle"
           disallowEmptySelection
-          selectedKeys={[selectedCandleSize]}
+          selectedKeys={[strategy.CANDLE_SIZE_MINUTES.toString()]}
           onChange={(e) => {
-            setSelectedCandleSize(e.target.value);
+            setStrategy({
+              ...strategy,
+              CANDLE_SIZE_MINUTES: parseInt(e.target.value),
+            });
           }}
           selectionMode="single"
         >
@@ -242,9 +220,9 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Indicator</>, 'INDICATOR')}
           placeholder="Select an indicator"
           disallowEmptySelection
-          selectedKeys={[selectedIndicator]}
+          selectedKeys={[strategy.INDICATOR]}
           onChange={(e) => {
-            setSelectedIndicator(e.target.value);
+            setStrategy({ ...strategy, INDICATOR: e.target.value });
           }}
           selectionMode="single"
         >
@@ -264,16 +242,16 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Period</>, 'SIGNAL_TRIGGER.period')}
           placeholder="20"
           onChange={(e) =>
-            setFormState({
-              ...formState,
+            setStrategy({
+              ...strategy,
               SIGNAL_TRIGGER: {
-                ...formState.SIGNAL_TRIGGER,
+                ...strategy.SIGNAL_TRIGGER,
                 period: e.target.value,
               },
             })
           }
-          value={formState.SIGNAL_TRIGGER?.period}
-          isInvalid={!isPositiveInteger(formState.SIGNAL_TRIGGER?.period)}
+          value={strategy.SIGNAL_TRIGGER?.period}
+          isInvalid={!isPositiveInteger(strategy.SIGNAL_TRIGGER?.period)}
         />
         {isMACrossType ? (
           <Input
@@ -285,16 +263,16 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
             )}
             placeholder="0"
             onChange={(e) =>
-              setFormState({
-                ...formState,
+              setStrategy({
+                ...strategy,
                 SIGNAL_TRIGGER: {
-                  ...formState.SIGNAL_TRIGGER,
+                  ...strategy.SIGNAL_TRIGGER,
                   target_value: e.target.value,
                 },
               })
             }
-            value={formState.SIGNAL_TRIGGER?.cross_percentage}
-            isInvalid={!isNumber(formState.SIGNAL_TRIGGER?.cross_percentage)}
+            value={strategy.SIGNAL_TRIGGER?.cross_percentage}
+            isInvalid={!isNumber(strategy.SIGNAL_TRIGGER?.cross_percentage)}
           />
         ) : (
           <Input
@@ -306,16 +284,16 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
             )}
             placeholder="70"
             onChange={(e) =>
-              setFormState({
-                ...formState,
+              setStrategy({
+                ...strategy,
                 SIGNAL_TRIGGER: {
-                  ...formState.SIGNAL_TRIGGER,
+                  ...strategy.SIGNAL_TRIGGER,
                   target_value: e.target.value,
                 },
               })
             }
-            value={formState.SIGNAL_TRIGGER?.target_value}
-            isInvalid={!isNumber(formState.SIGNAL_TRIGGER?.target_value)}
+            value={strategy.SIGNAL_TRIGGER?.target_value}
+            isInvalid={!isNumber(strategy.SIGNAL_TRIGGER?.target_value)}
           />
         )}
         <Select
@@ -327,9 +305,15 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           )}
           placeholder="Select a cross direction"
           disallowEmptySelection
-          selectedKeys={[selectedCrossDirection]}
+          selectedKeys={[strategy.SIGNAL_TRIGGER?.cross_direction]}
           onChange={(e) => {
-            setSelectedCrossDirection(e.target.value);
+            setStrategy({
+              ...strategy,
+              SIGNAL_TRIGGER: {
+                ...strategy.SIGNAL_TRIGGER,
+                cross_direction: e.target.value,
+              },
+            });
           }}
           selectionMode="single"
         >
@@ -355,9 +339,15 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           )}
           placeholder="Select position type"
           disallowEmptySelection
-          selectedKeys={[selectedPositionType]}
+          selectedKeys={[strategy.SIGNAL_TRIGGER?.position_type]}
           onChange={(e) => {
-            setSelectedPositionType(e.target.value);
+            setStrategy({
+              ...strategy,
+              SIGNAL_TRIGGER: {
+                ...strategy.SIGNAL_TRIGGER,
+                position_type: e.target.value,
+              },
+            });
           }}
           selectionMode="single"
         >
@@ -377,10 +367,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Take profit</>, 'TAKE_PROFIT')}
           placeholder="1"
           onChange={(e) =>
-            setFormState({ ...formState, TAKE_PROFIT: e.target.value })
+            setStrategy({ ...strategy, TAKE_PROFIT: e.target.value })
           }
-          value={formState.TAKE_PROFIT}
-          isInvalid={!isPositiveInteger(formState.TAKE_PROFIT)}
+          value={strategy.TAKE_PROFIT}
+          isInvalid={!isPositiveInteger(strategy.TAKE_PROFIT)}
         />
         <Input
           {...defaultInputProps}
@@ -388,10 +378,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Stop loss</>, 'STOP_LOSS')}
           placeholder="1"
           onChange={(e) =>
-            setFormState({ ...formState, STOP_LOSS: e.target.value })
+            setStrategy({ ...strategy, STOP_LOSS: e.target.value })
           }
-          value={formState.STOP_LOSS}
-          isInvalid={!isPositiveInteger(formState.STOP_LOSS)}
+          value={strategy.STOP_LOSS}
+          isInvalid={!isPositiveInteger(strategy.STOP_LOSS)}
         />
       </div>
       <div className={styles.row}>
@@ -401,10 +391,10 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Entry spread</>, 'START_GAP_PERCENTAGE')}
           placeholder="0"
           onChange={(e) =>
-            setFormState({ ...formState, START_GAP_PERCENTAGE: e.target.value })
+            setStrategy({ ...strategy, START_GAP_PERCENTAGE: e.target.value })
           }
-          value={formState.START_GAP_PERCENTAGE}
-          isInvalid={!isPositiveOrZeroInteger(formState.START_GAP_PERCENTAGE)}
+          value={strategy.START_GAP_PERCENTAGE}
+          isInvalid={!isPositiveOrZeroInteger(strategy.START_GAP_PERCENTAGE)}
         />
         <Input
           {...defaultInputProps}
@@ -412,13 +402,13 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
           label={withTooltip(<>Expiry time</>, 'OPERATION_EXPIRY_TIME')}
           placeholder="0"
           onChange={(e) =>
-            setFormState({
-              ...formState,
+            setStrategy({
+              ...strategy,
               OPERATION_EXPIRY_TIME: e.target.value,
             })
           }
-          value={formState.OPERATION_EXPIRY_TIME}
-          isInvalid={!isPositiveOrZeroInteger(formState.OPERATION_EXPIRY_TIME)}
+          value={strategy.OPERATION_EXPIRY_TIME}
+          isInvalid={!isPositiveOrZeroInteger(strategy.OPERATION_EXPIRY_TIME)}
         />
       </div>
     </div>

@@ -67,7 +67,7 @@ const BacktestResults = ({ results }) => {
           {viewResultsDetails ? 'Ocultar' : 'Ver'} detalles
         </div>
         <div>
-          <Link href={`/backtest/${results.backtestId}/log`}>
+          <Link href={`/backtest/${results.backtestId}/log`} target="_blank">
             ver log completo
           </Link>
         </div>

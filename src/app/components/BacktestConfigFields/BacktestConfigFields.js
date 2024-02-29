@@ -51,30 +51,6 @@ const BacktestConfigFields = ({
   setFormState,
   isEditing = true,
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState(
-    formState.backtestPeriod,
-  );
-  const [selectedInterval, setSelectedInterval] = useState(
-    formState.backtestPeriod,
-  );
-
-  useEffect(() => {
-    setFormState({
-      ...formState,
-      backtestPeriod: selectedPeriod,
-    });
-  }, [selectedPeriod]);
-
-  useEffect(() => {
-    setFormState({
-      ...formState,
-      strategy: {
-        ...formState.strategy,
-        TICK_INTERVAL_MINUTES: parseInt(selectedInterval),
-      },
-    });
-  }, [selectedInterval]);
-
   const defaultInputProps = {
     disabled: false,
     size: 'sm',
@@ -107,12 +83,16 @@ const BacktestConfigFields = ({
         <Select
           {...defaultInputProps}
           className={styles.select}
-          label={'Period'}
+          label={withTooltip(<>Period</>, 'PERIOD')}
           placeholder="Select a period"
           disallowEmptySelection
-          selectedKeys={[selectedPeriod]}
+          selectedKeys={[formState.backtestPeriod]}
           onChange={(e) => {
-            setSelectedPeriod(e.target.value);
+            setFormState({
+              ...formState,
+              backtestPeriod: e.target.value,
+              runBacktestDisabled: false,
+            });
           }}
           selectionMode="single"
         >
@@ -166,11 +146,18 @@ const BacktestConfigFields = ({
         <Select
           {...defaultInputProps}
           className={styles.select}
-          label={'Tick interval'}
+          label={withTooltip(<>Tick interval</>, 'TICK_INTERVAL_MINUTES')}
           disallowEmptySelection
-          selectedKeys={[selectedInterval]}
+          selectedKeys={[formState.strategy.TICK_INTERVAL_MINUTES.toString()]}
           onChange={(e) => {
-            setSelectedInterval(e.target.value);
+            setFormState({
+              ...formState,
+              strategy: {
+                ...formState.strategy,
+                TICK_INTERVAL_MINUTES: parseInt(e.target.value),
+              },
+              runBacktestDisabled: false,
+            });
           }}
           selectionMode="single"
         >
