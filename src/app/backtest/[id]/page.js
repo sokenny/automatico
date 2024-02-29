@@ -18,7 +18,7 @@ export default async function BacktestPage({ params }) {
       return {
         id: operation.id,
         type: operation.type,
-        amount: operation.amount,
+        amount: operation.amount.toFixed(2),
         quantity: operation.quantity,
         open_price: operation.open_price,
         exit_price: operation.exit_price,
@@ -42,10 +42,8 @@ export default async function BacktestPage({ params }) {
             <div>{backtest.period_end_at}</div>
           </div>
         </div>
-        {/* <div>{JSON.stringify(backtest)}</div> */}
         <div className={styles.colRight}>{/* <HeaderActions /> */}</div>
       </div>
-      {/* TODO-p1: Cuando esten los StrategyConfigFields listos, tenerlos aca para ver el config de el backtest */}
       <div className={styles.results}>
         <div className={styles.chart}>
           <BacktestChart

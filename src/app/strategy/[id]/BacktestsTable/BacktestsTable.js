@@ -37,6 +37,7 @@ const BacktestsTable = ({ rows = [] }) => {
               page={page}
               total={pages}
               onChange={(page) => setPage(page)}
+              size="sm"
             />
           </div>
         ) : null

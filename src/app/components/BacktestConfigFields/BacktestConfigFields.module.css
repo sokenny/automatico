@@ -1,9 +1,11 @@
-.input, .select {
+.input,
+.select {
   width: 150px;
   margin-right: 8px;
 }
 
-.input > div > div, .select button {
+.input > div > div,
+.select button {
   border-radius: 2px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -25,4 +27,18 @@
 .tooltip {
   max-width: 250px;
   padding: 12px;
+}
+
+.customDates {
+  display: flex;
+  align-items: center;
+}
+
+.period {
+  display: flex;
+  align-items: flex-end;
+}
+
+.period .select {
+  margin-right: 8px;
 }

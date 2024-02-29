@@ -2,6 +2,7 @@ import HeaderActions from './HeaderActions/HeaderActions';
 import BacktestsTable from './BacktestsTable/BacktestsTable';
 import styles from './page.module.css';
 import JsonStrategy from '@/app/components/JsonStrategy/JsonStrategy';
+import StrategyConfigFields from '@/app/components/StrategyConfigFields/StrategyConfigFields';
 
 export default async function StrategyPage({ params }) {
   const strategyId = params.id;
@@ -28,6 +29,7 @@ export default async function StrategyPage({ params }) {
   }
 
   const strategyCopy = { ...strategy };
+  console.log('strategyCopy: ', strategyCopy);
   delete strategyCopy.backtests;
   const backtestRows = getBacktestRows(strategy.backtests);
 
@@ -42,7 +44,7 @@ export default async function StrategyPage({ params }) {
         </div>
       </div>
       <div className={styles.strategyConfig}>
-        <JsonStrategy strategy={strategyCopy} />
+        <StrategyConfigFields strategy={strategyCopy.config} />
       </div>
       {backtestRows.length > 0 && (
         <div className={styles.backtests}>

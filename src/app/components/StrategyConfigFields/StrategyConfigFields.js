@@ -1,7 +1,13 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Input, Select, SelectItem, Tooltip } from '@nextui-org/react';
-import strategyFieldsTooltips from '../../contants/strategyFieldsTooltips';
+import strategyFieldsTooltips from '../../constants/strategyFieldsTooltips';
 import styles from './StrategyConfigFields.module.css';
+
+function isValidPair(value) {
+  return value.endsWith('USDT');
+}
 
 function isPositiveInteger(value) {
   return value > 0;
@@ -18,17 +24,6 @@ function isValidLeverage(value) {
 function isNumber(value) {
   return !isNaN(value);
 }
-
-const pairs = [
-  {
-    value: 'BTCUSDT',
-    label: 'BTCUSDT',
-  },
-  {
-    value: 'ETHUSDT',
-    label: 'ETHUSDT',
-  },
-];
 
 const candleSizes = [
   {
@@ -109,7 +104,6 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
   const [selectedPositionType, setSelectedPositionType] = useState(
     formState.SIGNAL_TRIGGER?.position_type.toString(),
   );
-  const [selectedPair, setSelectedPair] = useState(formState.PAIR.toString());
 
   useEffect(() => {
     setSelectedCandleSize(formState.CANDLE_SIZE_MINUTES.toString());
@@ -144,10 +138,7 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
         color="primary"
         delay={500}
       >
-        <div className={styles.label}>
-          {component}
-          <div className={styles.iIcon}>i</div>
-        </div>
+        <div className={styles.label}>{component}</div>
       </Tooltip>
     );
   }
@@ -155,28 +146,15 @@ const StrategyConfigFields = ({ strategy = {}, isEditing = true }) => {
   return (
     <div className={`${styles.container} ${isEditing ? styles.editing : ''}`}>
       <div className={styles.row}>
-        <Select
+        <Input
           {...defaultInputProps}
-          className={styles.select}
+          type="text"
           label={withTooltip(<>Pair</>, 'PAIR')}
-          placeholder="Select an asset pair"
-          disallowEmptySelection
-          selectedKeys={[selectedPair]}
-          onChange={(e) => {
-            setSelectedPair(e.target.value);
-          }}
-          selectionMode="single"
-        >
-          {pairs.map((pair) => (
-            <SelectItem
-              key={pair.value}
-              value={pair.value}
-              className={styles.selectItem}
-            >
-              {pair.label}
-            </SelectItem>
-          ))}
-        </Select>
+          labelPlacement={'outside'}
+          onChange={(e) => setFormState({ ...formState, PAIR: e.target.value })}
+          value={formState.PAIR}
+          isInvalid={!isValidPair(formState.PAIR)}
+        />
         <Input
           {...defaultInputProps}
           type="number"

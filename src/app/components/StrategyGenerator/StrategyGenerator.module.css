@@ -62,14 +62,6 @@
   align-items: center;
 }
 
-.strategyPreview {
-  opacity: 0.4;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .createdStrategy .label {
   margin-right: 16px;
 }
@@ -100,10 +92,6 @@
   margin-right: 8px;
 }
 
-.toggleDetails {
-  margin-right: 16px;
-}
-
 .viewDocs {
   color: var(--linkBlue);
   text-decoration: underline;
@@ -125,37 +113,7 @@
   /* margin-top: 16px; */
 }
 
-
-.backtestPeriod {
-}
-
-.backtestPeriod .titleWrapper {
-  display: flex;
-  align-items: center;
-}
-
-.customDates {
-    display: flex;
-    margin-top: 16px;
-}
-
-.customDates label {
-    opacity: .5;
-    text-transform: uppercase;
-    font-size: 12px;
-    margin-right: 8px;
-}
-
-.customDates .dateInput {
-    margin-right: 32px;
-}
-
-.dateInput input {
-  width: 125px;
-}
-
 .backtestPeriod .stepTitle {
-  margin-bottom: 0;
   margin-right: 16px;
 }
 

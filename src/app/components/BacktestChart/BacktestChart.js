@@ -21,7 +21,7 @@ ChartJS.register(
   Tooltip,
   Legend,
 );
-import colors from '../../contants/colors';
+import colors from '../../constants/colors';
 import unixToShortDate from '../../helpers/unixToShortDate';
 import styles from './BacktestChart.module.css';
 

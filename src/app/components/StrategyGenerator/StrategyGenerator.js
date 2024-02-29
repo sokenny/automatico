@@ -9,11 +9,9 @@ import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
 import validateStrategy from '../../helpers/validateStrategy';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
 import sanitizeConfig from '../../helpers/sanitizeConfig';
-import BacktestPeriodsDropdown from '../BacktestPeriodsDropdown/BacktestPeriodsDropdown';
+import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
 import BacktestResults from '../BacktestResults/BacktestResults';
-import JsonStrategy from '../JsonStrategy/JsonStrategy';
 import StrategyConfigFields from '../StrategyConfigFields/StrategyConfigFields';
-import StrategyRow from '../StrategyRow/StrategyRow';
 import styles from './StrategyGenerator.module.css';
 
 const MAX_DAYS_ALLOWED = 245;
@@ -45,7 +43,7 @@ const StrategyGenerator = () => {
     // exit: '',
     // strategy: null,
     viewDetails: false,
-    backtestPeriod: null,
+    backtestPeriod: 'week',
     customPeriodFrom: null,
     customPeriodTo: null,
     backtestResults: null,
@@ -104,7 +102,11 @@ const StrategyGenerator = () => {
           }
           setFormState({
             ...formState,
-            strategy,
+            strategy: {
+              // We set some default values here but the spread operator will override them if the strategy has them
+              TICK_INTERVAL_MINUTES: 1,
+              ...strategy,
+            },
             errors: {
               ...formState.errors,
               strategy: errors,
@@ -294,30 +296,16 @@ const StrategyGenerator = () => {
         <>
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategy}>
-              {/* TODO-p2: Refactor de StrategyGenerator para que sea mas legible */}
-              {/* TODO-p2: Poder editar la estrategia. Permitir editar el JSON o introducir campos tipo inputs  */}
               <div className={styles.stepTitle}>Estrategia creada:</div>
               {/* <StrategyRow
                 strategy={formState.strategy}
                 className={styles.strategyRow}
               /> */}
-              {/* {!formState.viewDetails && (
-                <div className={styles.strategyPreview}>
-                  {JSON.stringify(formState.strategy, null, 2)}
-                </div>
-              )} */}
             </div>
             <div className={styles.strategyDetails}>
-              {/* TODO-p1: Crear strategy config fields component */}
-              {formState.viewDetails && (
-                <JsonStrategy strategy={formState.strategy} />
-              )}
               <StrategyConfigFields strategy={formState.strategy} />
             </div>
             <div className={styles.stratDetailsActions}>
-              <div className={styles.toggleDetails} onClick={toggleDetails}>
-                {formState.viewDetails ? 'Ocultar' : 'Ver'} detalles
-              </div>
               <div className={styles.viewDocs}>
                 <a>Consultar documentación</a>
               </div>
@@ -342,49 +330,12 @@ const StrategyGenerator = () => {
           <div className={styles.step}>
             <div className={styles.backtestPeriod}>
               <div className={styles.titleWrapper}>
-                <div className={styles.stepTitle}>Período a testear:</div>
-                {/* TODO-p1: Que se configure el tick interval acá con otro dropdown */}
-                <BacktestPeriodsDropdown
-                  onChange={(value) => {
-                    setFormState({
-                      ...formState,
-                      backtestPeriod: value,
-                      runBacktestDisabled: false,
-                    });
-                  }}
-                  disabled={loading}
-                />
+                <div className={styles.stepTitle}>Backtest settings:</div>
               </div>
-              {formState.backtestPeriod === 'custom' && (
-                <div className={styles.customDates}>
-                  <div className={styles.dateInput}>
-                    <label>Desde:</label>
-                    <input
-                      type="date"
-                      onChange={(e) =>
-                        setFormState({
-                          ...formState,
-                          customPeriodFrom: e.target.value,
-                          runBacktestDisabled: false,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className={styles.dateInput}>
-                    <label>Hasta:</label>
-                    <input
-                      type="date"
-                      onChange={(e) =>
-                        setFormState({
-                          ...formState,
-                          customPeriodTo: e.target.value,
-                          runBacktestDisabled: false,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              )}
+              <BacktestConfigFields
+                formState={formState}
+                setFormState={setFormState}
+              />
               {numDaysInPeriod >= MAX_DAYS_ALLOWED && (
                 <div className={styles.error}>
                   A momento solo permitimos backtestear hasta 45 días a la vez.
@@ -392,6 +343,7 @@ const StrategyGenerator = () => {
               )}
             </div>
             <div className={styles.backtestActions}>
+              {/* TODO-p1: Modal warning si va a correr un backtest con muchas velas (periodo largo y tick size bajo) */}
               <Button
                 color="primary"
                 className={styles.runBacktestButton}

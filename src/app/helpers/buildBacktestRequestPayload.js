@@ -1,5 +1,4 @@
 import toPythonDictStyle from './toPythonDictStyle';
-import getStrategyToUse from './getStrategyToUse';
 import getPeriodForBacktest from './getPeriodForBacktest';
 
 const defaultHiddenStrategyParams = {
@@ -15,9 +14,6 @@ function buildBacktestRequestPayload(formState) {
       to: formState.customPeriodTo,
     },
   });
-  console.log('formState: ', formState);
-  console.log('config --: ', config);
-  console.log('period creado! ', period);
   const payload = {
     ...defaultHiddenStrategyParams,
     ...config,

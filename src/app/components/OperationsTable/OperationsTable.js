@@ -19,6 +19,13 @@ const OperationsTable = ({ rows = [] }) => {
   const rowsPerPage = 10;
   const pages = rows.length ? Math.ceil(rows.length / rowsPerPage) : 0;
 
+  const rowsOnPage = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return rows.slice(start, end);
+  }, [page, rows]);
+
   return (
     <Table
       className={styles.table}
@@ -33,6 +40,7 @@ const OperationsTable = ({ rows = [] }) => {
               page={page}
               total={pages}
               onChange={(page) => setPage(page)}
+              size="sm"
             />
           </div>
         ) : null
@@ -64,7 +72,7 @@ const OperationsTable = ({ rows = [] }) => {
           close time
         </TableColumn>
       </TableHeader>
-      <TableBody items={rows ?? []} loadingContent={<Spinner />}>
+      <TableBody items={rowsOnPage ?? []} loadingContent={<Spinner />}>
         {(item) => (
           <TableRow key={item?.id}>
             {(columnKey) => (
