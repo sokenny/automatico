@@ -181,7 +181,10 @@ const StrategyConfigFields = ({
             </div>
           }
           onChange={(e) =>
-            setStrategy({ ...strategy, IDEAL_TRADE_AMOUNT: e.target.value })
+            setStrategy({
+              ...strategy,
+              IDEAL_TRADE_AMOUNT: parseInt(e.target.value),
+            })
           }
           value={strategy.IDEAL_TRADE_AMOUNT}
           isInvalid={!validations['IDEAL_TRADE_AMOUNT']}
@@ -197,7 +200,10 @@ const StrategyConfigFields = ({
             </div>
           }
           onChange={(e) =>
-            setStrategy({ ...strategy, INITIAL_BALANCE: e.target.value })
+            setStrategy({
+              ...strategy,
+              INITIAL_BALANCE: parseInt(e.target.value),
+            })
           }
           value={strategy.INITIAL_BALANCE}
           isInvalid={!validations['INITIAL_BALANCE']}
@@ -210,7 +216,7 @@ const StrategyConfigFields = ({
           onChange={(e) =>
             setStrategy({
               ...strategy,
-              MAX_WEIGHT_ALLOCATION: e.target.value,
+              MAX_WEIGHT_ALLOCATION: parseInt(e.target.value),
             })
           }
           value={strategy.MAX_WEIGHT_ALLOCATION}
@@ -222,7 +228,7 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Leverage</>, 'LEVERAGE')}
           placeholder="1"
           onChange={(e) =>
-            setStrategy({ ...strategy, LEVERAGE: e.target.value })
+            setStrategy({ ...strategy, LEVERAGE: parseInt(e.target.value) })
           }
           value={strategy.LEVERAGE}
           isInvalid={!validations['LEVERAGE']}
@@ -311,7 +317,7 @@ const StrategyConfigFields = ({
                 ...strategy,
                 SIGNAL_TRIGGER: {
                   ...strategy.SIGNAL_TRIGGER,
-                  cross_percentage: e.target.value,
+                  cross_percentage: parseInt(e.target.value),
                 },
               })
             }
@@ -412,7 +418,7 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Take profit</>, 'TAKE_PROFIT')}
           placeholder="1"
           onChange={(e) =>
-            setStrategy({ ...strategy, TAKE_PROFIT: e.target.value })
+            setStrategy({ ...strategy, TAKE_PROFIT: parseInt(e.target.value) })
           }
           value={strategy.TAKE_PROFIT}
           isInvalid={!validations['TAKE_PROFIT']}
@@ -423,7 +429,7 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Stop loss</>, 'STOP_LOSS')}
           placeholder="1"
           onChange={(e) =>
-            setStrategy({ ...strategy, STOP_LOSS: e.target.value })
+            setStrategy({ ...strategy, STOP_LOSS: parseInt(e.target.value) })
           }
           value={strategy.STOP_LOSS}
           isInvalid={!validations['STOP_LOSS']}
@@ -436,20 +442,23 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Entry spread</>, 'START_GAP_PERCENTAGE')}
           placeholder="0"
           onChange={(e) =>
-            setStrategy({ ...strategy, START_GAP_PERCENTAGE: e.target.value })
+            setStrategy({
+              ...strategy,
+              START_GAP_PERCENTAGE: parseInt(e.target.value),
+            })
           }
           value={strategy.START_GAP_PERCENTAGE}
           isInvalid={!validations['START_GAP_PERCENTAGE']}
         />
         <Input
           {...defaultInputProps}
-          type="text"
+          type="number"
           label={withTooltip(<>Expiry time</>, 'OPERATION_EXPIRY_TIME')}
           placeholder="0"
           onChange={(e) =>
             setStrategy({
               ...strategy,
-              OPERATION_EXPIRY_TIME: e.target.value,
+              OPERATION_EXPIRY_TIME: parseInt(e.target.value),
             })
           }
           value={strategy.OPERATION_EXPIRY_TIME}

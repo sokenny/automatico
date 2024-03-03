@@ -117,6 +117,14 @@
   margin-right: 16px;
 }
 
+.createdStrategy .stepTitle {
+  margin-bottom: 0;
+}
+
+.createdStrategyHeader {
+  margin-bottom: 16px;
+}
+
 .backtestPeriod .error {
   color: var(--error);
   font-size: 14px;
@@ -125,4 +133,13 @@
 
 .backtestActions {
   margin-top: 16px;
+}
+
+.tutorial {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.tutorial a {
+  color: var(--linkBlue);
 }

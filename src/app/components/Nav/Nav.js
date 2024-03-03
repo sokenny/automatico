@@ -35,7 +35,9 @@ const Nav = ({ authToken }) => {
     <Navbar maxWidth="full" className={styles.container}>
       <NavbarBrand className={styles.identity}>
         <NextLink href={'/backtest'}>
-          <p className="text-inherit">MA8</p>
+          <p className="text-inherit">
+            MA8 (en construcción!) - dev: juanchaher99@gmail.com
+          </p>
         </NextLink>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
@@ -60,14 +62,15 @@ const Nav = ({ authToken }) => {
           </NavbarItem>
         ) : (
           <>
-            <NavbarItem
-              className="hidden lg:flex"
-              onClick={() => signIn('google')}
-            >
-              <div href="#">Login</div>
+            <NavbarItem className="hidden lg:flex">
+              <div onClick={() => signIn('google')}>Login</div>
             </NavbarItem>
-            <NavbarItem onClick={() => signIn('google')}>
-              <Button as={Link} color="primary" href="#" variant="flat">
+            <NavbarItem>
+              <Button
+                onClick={() => signIn('google')}
+                color="primary"
+                variant="flat"
+              >
                 Sign Up
               </Button>
             </NavbarItem>

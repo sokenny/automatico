@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} ${styles.layout}`}>
         <Providers>
-          <Nav authToken={nextAuth.value} />
+          <Nav authToken={nextAuth?.value} />
           <div className={styles.innerWrapper}>{children}</div>
         </Providers>
       </body>

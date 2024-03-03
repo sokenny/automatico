@@ -273,6 +273,15 @@ const StrategyGenerator = () => {
         totalDays={numDaysInPeriod}
       />
       <div className={`${styles.aiPrompt} ${styles.step}`}>
+        <div className={styles.tutorial}>
+          <a
+            href="https://www.loom.com/share/0953b357dfad494da4c81f36589a3c6e?sid=9ce5993c-9466-4f3e-b15f-6d00068b2a78"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Click aquí para ver tutorial (2 min.)
+          </a>
+        </div>
         <div className={styles.entryAndExit}>
           <div className={styles.step}>
             <h3 className={styles.stepTitle}>Entry:</h3>
@@ -328,8 +337,25 @@ const StrategyGenerator = () => {
       {formState.strategy !== null && (
         <>
           <div className={`${styles.createdStrategy} ${styles.step}`}>
-            <div className={styles.createdStrategy}>
+            <div className={styles.createdStrategyHeader}>
               <div className={styles.stepTitle}>Estrategia creada:</div>
+              <div className={styles.tutorial}>
+                <a
+                  href="https://www.loom.com/share/0980f2e336de45c88a2c1eb444653acd?sid=b85d8080-671e-4628-9074-59e76fba8d84"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Tutorial Vid 1 (5 min.)
+                </a>
+                <span> --- </span>
+                <a
+                  href="https://www.loom.com/share/57598054ca5a4a7ba94018d547b8f728"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Tutorial Vid 2 (2 min.)
+                </a>
+              </div>
             </div>
             <div className={styles.strategyDetails}>
               <StrategyConfigFields
