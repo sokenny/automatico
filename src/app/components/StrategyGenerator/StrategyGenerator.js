@@ -35,6 +35,10 @@ const mockupGeneratedStrategy = {
   IDEAL_TRADE_AMOUNT: 1000,
 };
 
+// TODO-p1: HAve a "loading" state variable for each request. To avoid having 2 buttons under a loading state
+
+// TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
+
 const StrategyGenerator = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -131,6 +135,9 @@ const StrategyGenerator = () => {
         console.error('Error creando estrategia: ', error);
         setLoading(false);
         throw new Error('Error creando estrategia');
+      })
+      .finally(() => {
+        setLoading(false);
       });
 
     toast.promise(strategyPromise, {

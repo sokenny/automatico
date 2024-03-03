@@ -91,7 +91,7 @@ const positionTypes = [
 
 const StrategyConfigFields = ({
   strategy,
-  setStrategy,
+  setStrategy = () => {},
   onIsValidChange = () => {},
   isEditing = true,
 }) => {

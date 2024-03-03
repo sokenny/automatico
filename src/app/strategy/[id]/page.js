@@ -49,7 +49,10 @@ export default async function StrategyPage({ params }) {
         </div>
       </div>
       <div className={styles.strategyConfig}>
-        <StrategyConfigFields strategy={strategyCopy.config} />
+        <StrategyConfigFields
+          strategy={strategyCopy.config}
+          isEditing={false}
+        />
       </div>
       {backtestRows.length > 0 && (
         <div className={styles.backtests}>
