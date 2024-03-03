@@ -1,17 +1,23 @@
+import ma8Fetch from '@/app/helpers/ma8Fetch';
 import HeaderActions from './HeaderActions/HeaderActions';
 import BacktestsTable from './BacktestsTable/BacktestsTable';
-import styles from './page.module.css';
-import JsonStrategy from '@/app/components/JsonStrategy/JsonStrategy';
 import StrategyConfigFields from '@/app/components/StrategyConfigFields/StrategyConfigFields';
+import styles from './page.module.css';
 
 export default async function StrategyPage({ params }) {
   const strategyId = params.id;
-  const res = await fetch(
+
+  const res = await ma8Fetch(
     `${process.env.NEXT_PUBLIC_API_ENDPOINT}/strategy/${strategyId}`,
-    {
-      cache: 'no-store',
-    },
   );
+
+  if (res.status === 404) {
+    return <>Not found</>;
+  }
+
+  if (res.status === 401) {
+    return <>Unauthorized</>;
+  }
 
   const strategy = await res.json();
 
@@ -29,7 +35,6 @@ export default async function StrategyPage({ params }) {
   }
 
   const strategyCopy = { ...strategy };
-  console.log('strategyCopy: ', strategyCopy);
   delete strategyCopy.backtests;
   const backtestRows = getBacktestRows(strategy.backtests);
 
@@ -52,7 +57,6 @@ export default async function StrategyPage({ params }) {
           <BacktestsTable rows={backtestRows} />
         </div>
       )}
-      {/* {JSON.stringify(strategy)} */}
     </div>
   );
 }

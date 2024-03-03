@@ -26,9 +26,11 @@ const handler = NextAuth({
         }
       );
       const response = await userFromDb.text();
-      console.log('Resonse:', response);
       return true;
     },
+  },
+  session: {
+    jwt: true,
   },
 });
 

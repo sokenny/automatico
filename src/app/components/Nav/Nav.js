@@ -1,5 +1,5 @@
 'use client';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import useStore from '../../store/index';
 import { useEffect } from 'react';
@@ -10,9 +10,6 @@ const Nav = () => {
   const { user, fetchStore } = useStore();
 
   console.log('user del store: ', user);
-
-  // get nextjs token from jwt
-  const secret = process.env.JWT_SECRET;
 
   useEffect(() => {
     // if session.user and no user, set user
@@ -27,15 +24,22 @@ const Nav = () => {
     <nav className={styles.container}>
       <ul>
         <li>
-          <Link href="/backtest">MA8</Link>
+          <Link href="/backtest">MA8 (En construcción!)</Link>
         </li>
         {/* <li>FAQ</li> */}
-        <li>Docs</li>
+        {/* <li>Docs</li> */}
         {/* <li>Change Log</li> */}
-        <li>Pricing</li>
+        {/* <li>Pricing</li> */}
+        <li>Contact: juanchaher99@gmail.com</li>
       </ul>
       <ul>
-        <li>Account</li>
+        <li
+          onClick={() => {
+            signOut();
+          }}
+        >
+          Log out
+        </li>
       </ul>
     </nav>
   );

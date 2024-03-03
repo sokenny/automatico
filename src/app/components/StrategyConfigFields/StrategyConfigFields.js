@@ -289,7 +289,7 @@ const StrategyConfigFields = ({
               ...strategy,
               SIGNAL_TRIGGER: {
                 ...strategy.SIGNAL_TRIGGER,
-                period: e.target.value,
+                period: parseInt(e.target.value),
               },
             })
           }
@@ -333,7 +333,7 @@ const StrategyConfigFields = ({
                 ...strategy,
                 SIGNAL_TRIGGER: {
                   ...strategy.SIGNAL_TRIGGER,
-                  target_value: e.target.value,
+                  target_value: parseInt(e.target.value),
                 },
               })
             }
