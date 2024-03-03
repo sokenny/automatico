@@ -29,9 +29,6 @@ const handler = NextAuth({
       return true;
     },
   },
-  session: {
-    jwt: true,
-  },
 });
 
 export { handler as GET, handler as POST };
