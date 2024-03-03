@@ -8,7 +8,7 @@ async function ma8Fetch(url, options = {}) {
       cookie: nextAuth.value,
       Authorization: `Bearer ${nextAuth.value}`,
     },
-    cache: 'no-store',
+    cache: 'force-cache',
     ...options,
   };
   const response = await fetch(url, defaultOptions);

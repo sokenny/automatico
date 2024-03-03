@@ -1,4 +1,5 @@
 import './globals.css';
+import { cookies } from 'next/headers';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from './Providers';
@@ -17,11 +18,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookiesStore = cookies();
+  const nextAuth = cookiesStore.get('next-auth.session-token');
   return (
     <html lang="en">
       <body className={`${inter.className} ${styles.layout}`}>
         <Providers>
-          <Nav />
+          <Nav authToken={nextAuth.value} />
           <div className={styles.innerWrapper}>{children}</div>
         </Providers>
       </body>

@@ -1,22 +1,16 @@
-import ma8Fetch from '@/app/helpers/ma8Fetch';
+'use client';
+import useStore from '@/app/store/index';
 import StrategiesTable from '@/app/components/StrategiesTable/StrategiesTable';
 import styles from './page.module.css';
 
-export default async function StrategiesPage() {
-  const res = await ma8Fetch(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/strategies`,
-    {
-      cache: 'force-cache',
-    },
-  );
+export default function StrategiesPage() {
+  const { user } = useStore();
 
-  if (res.status === 401) {
-    return <>Unauthorized</>;
+  if (!user) {
+    return <>Loading...</>;
   }
 
-  const strategies = await res.json();
-
-  console.log('strategies: ', strategies);
+  const strategies = user.strategies;
 
   function getStrategyRows(strategies) {
     return strategies.map((strategy) => {

@@ -3,16 +3,15 @@ import { create } from 'zustand';
 const useStore = create((set) => ({
   user: null,
   setUser: (user) => set({ user }),
-  fetchStore: (session) => {
+  fetchStore: (session, token) => {
     if (session) {
-      //   set({ user: session.user });
-      console.log('intentamos fetchear tree');
       try {
         fetch(
           `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user-data/${session.user.email}`,
           {
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
             },
             cache: 'no-store',
           },
