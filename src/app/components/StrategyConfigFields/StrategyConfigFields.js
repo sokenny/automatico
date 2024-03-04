@@ -150,7 +150,7 @@ const StrategyConfigFields = ({
     const key = Object.keys(validations)[i];
     if (key === 'SIGNAL_TRIGGER.cross_percentage' && !isMACrossType)
       return true;
-    if (key === 'SIGNAL_TRIGGER.target_value' && !isMACrossType) return true;
+    if (key === 'SIGNAL_TRIGGER.target_value' && isMACrossType) return true;
     return v;
   });
 

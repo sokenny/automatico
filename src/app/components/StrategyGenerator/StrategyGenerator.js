@@ -360,7 +360,6 @@ const StrategyGenerator = () => {
             <div className={styles.strategyDetails}>
               <StrategyConfigFields
                 strategy={formState.strategy}
-                isEditing={formState.backtestResults === null}
                 setStrategy={(strategy) =>
                   setFormState({
                     ...formState,
@@ -380,7 +379,7 @@ const StrategyGenerator = () => {
             </div>
             <div className={styles.stratDetailsActions}>
               <div className={styles.viewDocs}>
-                <a>Consultar documentación</a>
+                {/* <a>Consultar documentación</a> */}
               </div>
             </div>
             {typeof formState.errors.strategy == 'string' ||
@@ -412,7 +411,7 @@ const StrategyGenerator = () => {
               />
               {candlesToAnalyse >= MAX_CANDLES_ALLOWED && (
                 <div className={styles.error}>
-                  A momento solo permitimos analizando hasta{' '}
+                  A momento solo permitimos analizar hasta{' '}
                   {MAX_CANDLES_ALLOWED / 1000}k velas por cada backtest. Por tu
                   configuración actual, estarías analizando{' '}
                   {candlesToAnalyse / 1000}k velas.
