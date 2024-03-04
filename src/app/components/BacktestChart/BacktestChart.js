@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
+import { Chart as ChartJS } from 'chart.js/auto';
 import {
-  Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
