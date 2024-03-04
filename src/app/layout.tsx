@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from './Providers';
+import getAuthTokenName from './helpers/getAuthTokenName';
 import Nav from './components/Nav/Nav';
 import styles from './layout.module.css';
 
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const cookiesStore = cookies();
-  const nextAuth = cookiesStore.get('next-auth.session-token');
+  const nextAuth = cookiesStore.get(getAuthTokenName());
   return (
     <html lang="en">
       <body className={`${inter.className} ${styles.layout}`}>
