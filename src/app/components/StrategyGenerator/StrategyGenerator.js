@@ -272,6 +272,23 @@ const StrategyGenerator = () => {
         tickSize={formState.strategy?.TICK_INTERVAL_MINUTES}
         totalDays={numDaysInPeriod}
       />
+      <div className={styles.feedback}>
+        <div className={styles.items}>
+          <div className={styles.item}>
+            -<b>Discord:</b> Te gustaría tener acceso gratis de por vida? Sumate
+            a discord y danos tu feedback :){' '}
+            <a href="https://discord.gg/3mEEmD45">
+              https://discord.gg/3mEEmD45
+            </a>
+          </div>
+          <div className={styles.item}>
+            -<b>Solicitá features:</b> Tenés un feature request?{' '}
+            <a href="https://ma8.canny.io/feature-requests/">
+              Publicalo en canny! 🙏
+            </a>
+          </div>
+        </div>
+      </div>
       <div className={`${styles.aiPrompt} ${styles.step}`}>
         <div className={styles.tutorial}>
           <a

@@ -143,3 +143,23 @@
 .tutorial a {
   color: var(--linkBlue);
 }
+
+.feedback {
+  background-color: rgba(186, 218, 255, 0.25);
+  border: 1px solid rgba(186, 218, 255, 1);
+  padding: 8px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.feedback .item b {
+  font-weight: 600;
+}
+
+.items .item {
+  font-size: 14px;
+}
+
+.items .item a {
+  color: var(--linkBlue);
+}
