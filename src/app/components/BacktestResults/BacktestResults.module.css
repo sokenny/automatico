@@ -51,3 +51,13 @@
 .dataPointValue.lost {
   color: var(--error);
 }
+
+@media (max-width: 720px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .row .dataPoint {
+    margin-bottom: 8px;
+  }
+}

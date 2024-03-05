@@ -26,3 +26,16 @@
   max-width: 250px;
   padding: 12px;
 }
+
+@media (max-width: 720px) {
+
+  .row {
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .row .input, .row .select {
+    width: 150px;
+    margin-bottom: 12px;
+  }
+}

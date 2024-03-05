@@ -1,35 +1,50 @@
 .container {
-    max-width: 900px;
+  max-width: 900px;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
 }
 
 .colLeft {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 .title {
-    font-size: 32px;
+  font-size: 32px;
 }
 
 .colRight {
-    margin-left: 16px;
+  margin-left: 16px;
 }
 
 .strategyConfig {
-    margin-bottom: 32px;
+  margin-bottom: 32px;
 }
 
 .backtests {
-    /* max-width:  ; */
+  /* max-width:  ; */
 }
 
 .sectionTitle {
-    font-size: 24px;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title {
     margin-bottom: 12px;
+  }
+
+  .colRight {
+    margin-left: 0;
+  }
 }

@@ -39,7 +39,7 @@ const Nav = ({ cookies, authToken }) => {
       <NavbarBrand className={styles.identity}>
         <NextLink href={'/backtest'}>
           <p className="text-inherit">
-            MA8 (en construcción!) - dev: juanchaher99@gmail.com
+            <b>ma8</b> (en construcción!)
           </p>
         </NextLink>
       </NavbarBrand>

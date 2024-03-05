@@ -253,9 +253,9 @@ const StrategyGenerator = () => {
     tickSize: formState.strategy?.TICK_INTERVAL_MINUTES,
   });
 
-  if (!user) {
-    return 'Loading...';
-  }
+  // if (!user) {
+  //   return 'Loading...';
+  // }
 
   return (
     <div>
@@ -281,6 +281,9 @@ const StrategyGenerator = () => {
             <a href="https://ma8.canny.io/feature-requests/">
               Publicalo en canny! 🙏
             </a>
+          </div>
+          <div className={styles.item}>
+            -<b>Dev:</b> juanchaher99@gmail.com
           </div>
         </div>
       </div>

@@ -163,3 +163,19 @@
 .items .item a {
   color: var(--linkBlue);
 }
+
+
+@media (max-width: 720px) {
+  .entryAndExit {
+    margin-top: 16px;
+    flex-direction: column;
+  }
+
+  .entryAndExit .step:first-child {
+    margin-bottom: 16px;
+  }
+
+  .step {
+    margin-bottom: 48px;
+  }
+}
