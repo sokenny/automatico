@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 const useStore = create((set) => ({
   user: null,
+  cookies: null,
+  setCookies: (cookies) => set({ cookies }),
   setUser: (user) => set({ user }),
   fetchStore: (session, token) => {
     if (session) {
@@ -19,7 +21,7 @@ const useStore = create((set) => ({
           .then((response) => response.json())
           .then((data) => {
             console.log('datusa que llegó: ', data);
-            set({ user: data });
+            set({ user: data, token });
           });
       } catch (error) {
         console.error('Failed to fetch store:', error);

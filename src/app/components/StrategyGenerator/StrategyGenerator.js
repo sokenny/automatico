@@ -47,7 +47,7 @@ const StrategyGenerator = () => {
     onOpen: onOpenCandleModal,
     onOpenChange: onOpenCandleModalChange,
   } = useDisclosure();
-  const { user } = useStore();
+  const { user, token } = useStore();
   const [formState, setFormState] = useState({
     // entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
     // exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
@@ -66,8 +66,6 @@ const StrategyGenerator = () => {
     isValidStrategy: false,
   });
   const resultsRef = useRef(null);
-
-  console.log('formState--: ', formState);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {
@@ -95,6 +93,7 @@ const StrategyGenerator = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           natural_language_strategy: `Entry: ${formState.entry} Exit: ${formState.exit}`,
@@ -148,9 +147,6 @@ const StrategyGenerator = () => {
 
   async function handleRunBacktest() {
     // check amount of candles that will be iterated, if necessary pop modal
-    console.log('numdaysinperiod: ', numDaysInPeriod);
-
-    console.log('candlesToAnalyse: ', candlesToAnalyse);
     if (candlesToAnalyse > MAX_CANDLES_ALLOWED) {
       onOpenCandleModal();
       return;
@@ -178,7 +174,6 @@ const StrategyGenerator = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log('chart data we return:', data.chart_data);
         setFormState({
           ...formState,
           backtestResults: {

@@ -15,12 +15,15 @@ import useStore from '../../store/index';
 import { useEffect } from 'react';
 import styles from './Nav.module.css';
 
-const Nav = ({ authToken }) => {
+const Nav = ({ cookies, authToken }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const { user, fetchStore } = useStore();
+  const { user, fetchStore, setCookies } = useStore();
 
   useEffect(() => {
+    if (cookies) {
+      setCookies(cookies);
+    }
     if (session?.user && !user) {
       fetchStore(session, authToken);
     }
