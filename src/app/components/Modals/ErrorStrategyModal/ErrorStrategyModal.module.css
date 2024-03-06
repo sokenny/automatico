@@ -1,0 +1,20 @@
+.title {
+  font-weight: 600;
+  display: flex;
+}
+
+.title span {
+  color: var(--error);
+}
+
+.body span {
+  color: var(--linkBlue);
+}
+
+.button {
+  border-radius: 4px;
+}
+
+.body ul li{
+  margin-bottom: 8px;
+}

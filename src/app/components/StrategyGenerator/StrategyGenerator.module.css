@@ -6,6 +6,9 @@
 .entryAndExit {
   display: flex;
   justify-content: space-between;
+}
+
+.entryAndExitContainer {
   margin-bottom: 16px;
 }
 
@@ -164,14 +167,13 @@
   color: var(--linkBlue);
 }
 
-
 @media (max-width: 720px) {
   .entryAndExit {
     margin-top: 16px;
     flex-direction: column;
   }
 
-  .entryAndExit .step:first-child {
+  .entryAndExitContainer {
     margin-bottom: 16px;
   }
 

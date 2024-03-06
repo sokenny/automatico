@@ -46,6 +46,42 @@ const candleSizes = [
     value: '60',
     label: '1h',
   },
+  {
+    value: '120',
+    label: '2h',
+  },
+  {
+    value: '240',
+    label: '4h',
+  },
+  {
+    value: '360',
+    label: '6h',
+  },
+  {
+    value: '480',
+    label: '8h',
+  },
+  {
+    value: '720',
+    label: '12h',
+  },
+  {
+    value: '1440',
+    label: '1d',
+  },
+  {
+    value: '4320',
+    label: '3d',
+  },
+  {
+    value: '10080',
+    label: '1w',
+  },
+  {
+    value: '43200',
+    label: '1M',
+  },
 ];
 
 const indicators = [
@@ -65,6 +101,10 @@ const indicators = [
     value: 'SMA',
     label: 'SMA',
   },
+  // {
+  //   value: 'MACD',
+  //   label: 'MACD',
+  // },
 ];
 
 const crossDirections = [

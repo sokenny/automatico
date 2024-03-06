@@ -13,6 +13,7 @@ import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPaylo
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
 import CandleSizeExceededModal from '../Modals/CandleSizeExceededModal/CandleSizeExceededModal';
+import ErrorStrategyModal from '../Modals/ErrorStrategyModal/ErrorStrategyModal';
 import BacktestResults from '../BacktestResults/BacktestResults';
 import StrategyConfigFields from '../StrategyConfigFields/StrategyConfigFields';
 import styles from './StrategyGenerator.module.css';
@@ -47,6 +48,12 @@ const StrategyGenerator = () => {
     onOpen: onOpenCandleModal,
     onOpenChange: onOpenCandleModalChange,
   } = useDisclosure();
+  const {
+    isOpen: isErrorStrategyModalOpen,
+    onOpen: onOpenErrorStrategyModal,
+    onOpenChange: onOpenErrorStrategyModalChange,
+  } = useDisclosure();
+
   const { user, token } = useStore();
   const [formState, setFormState] = useState({
     // entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
@@ -59,12 +66,12 @@ const StrategyGenerator = () => {
     customPeriodFrom: null,
     customPeriodTo: null,
     backtestResults: null,
-    runBacktestDisabled: false,
     errors: {
       strategy: [],
     },
     isValidStrategy: false,
   });
+  console.log('formState: ', formState);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -125,9 +132,10 @@ const StrategyGenerator = () => {
             ...formState,
             errors: {
               ...formState.errors,
-              strategy: data?.error || 'Error creando estrategia',
+              strategy: [data?.error || 'Error creando estrategia'],
             },
           });
+          onOpenErrorStrategyModal();
         }
       })
       .catch((error) => {
@@ -167,7 +175,7 @@ const StrategyGenerator = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
+          userId: user?.id,
           ...payloadToSend,
         }),
       },
@@ -181,7 +189,6 @@ const StrategyGenerator = () => {
             backtestId: data.backtest_id,
             chartData: data.chart_data,
           },
-          runBacktestDisabled: true,
         });
       })
       .catch((error) => {
@@ -267,6 +274,11 @@ const StrategyGenerator = () => {
         tickSize={formState.strategy?.TICK_INTERVAL_MINUTES}
         totalDays={numDaysInPeriod}
       />
+      <ErrorStrategyModal
+        isOpen={isErrorStrategyModalOpen}
+        onOpenChange={onOpenErrorStrategyModalChange}
+        errors={formState?.errors?.strategy}
+      />
       <div className={styles.feedback}>
         <div className={styles.items}>
           <div className={styles.item}>
@@ -280,7 +292,8 @@ const StrategyGenerator = () => {
             -<b>Solicitá features:</b> Tenés un feature request?{' '}
             <a href="https://ma8.canny.io/feature-requests/">
               Publicalo en canny! 🙏
-            </a>
+            </a>{' '}
+            También vas a poder ver en que estamos trabajando.
           </div>
           <div className={styles.item}>
             -<b>Dev:</b> juanchaher99@gmail.com
@@ -297,44 +310,56 @@ const StrategyGenerator = () => {
             Click aquí para ver tutorial (2 min.)
           </a>
         </div>
-        <div className={styles.entryAndExit}>
-          <div className={styles.step}>
-            <h3 className={styles.stepTitle}>Entry:</h3>
-            {formState.strategy !== null ? (
-              <div className={`${styles.textarea} ${styles.disabled}`}>
-                {formState.entry}
-              </div>
-            ) : (
-              <textarea
-                className={styles.textarea}
-                placeholder="Si BTC cruza el SMA 20, comprá 1k USD."
-                value={formState.entry}
-                onChange={(e) =>
-                  setFormState({ ...formState, entry: e.target.value })
-                }
-                disabled={formState.strategy !== null}
-              ></textarea>
-            )}
+        <div className={styles.entryAndExitContainer}>
+          <div className={styles.entryAndExit}>
+            <div className={styles.step}>
+              <h3 className={styles.stepTitle}>Entry:</h3>
+              {formState.strategy !== null ? (
+                <div className={`${styles.textarea} ${styles.disabled}`}>
+                  {formState.entry}
+                </div>
+              ) : (
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Si BTC cruza el SMA 20, comprá 1k USD."
+                  value={formState.entry}
+                  onChange={(e) =>
+                    setFormState({ ...formState, entry: e.target.value })
+                  }
+                  disabled={formState.strategy !== null}
+                ></textarea>
+              )}
+            </div>
+            <div className={styles.step}>
+              <h3 className={styles.stepTitle}>Exit:</h3>
+              {formState.strategy !== null ? (
+                <div className={`${styles.textarea} ${styles.disabled}`}>
+                  {formState.exit}
+                </div>
+              ) : (
+                <textarea
+                  className={styles.textarea}
+                  placeholder="Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%."
+                  value={formState.exit}
+                  onChange={(e) =>
+                    setFormState({ ...formState, exit: e.target.value })
+                  }
+                  disabled={formState.strategy !== null}
+                ></textarea>
+              )}
+            </div>
           </div>
-          <div className={styles.step}>
-            <h3 className={styles.stepTitle}>Exit:</h3>
-            {formState.strategy !== null ? (
-              <div className={`${styles.textarea} ${styles.disabled}`}>
-                {formState.exit}
-              </div>
-            ) : (
-              <textarea
-                className={styles.textarea}
-                placeholder="Cerrá la posición con una ganancia del 3% o si la pérdida supera el 2%."
-                value={formState.exit}
-                onChange={(e) =>
-                  setFormState({ ...formState, exit: e.target.value })
-                }
-                disabled={formState.strategy !== null}
-              ></textarea>
-            )}
-          </div>
+          {formState.errors.strategy.length > 0 && (
+            <div className={styles.errorsList}>
+              {formState.errors.strategy.map((error, index) => (
+                <div key={index} className={styles.error}>
+                  <div>{error}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
         <div className={styles.actions}>
           {formState.strategy === null && (
             <Button
@@ -442,10 +467,10 @@ const StrategyGenerator = () => {
                 onClick={handleRunBacktest}
                 isDisabled={
                   loading ||
-                  formState.runBacktestDisabled ||
                   (formState.errors.strategy.length > 0 &&
                     !formState.isValidStrategy) ||
-                  !formState.isValidStrategy
+                  !formState.isValidStrategy ||
+                  !user?.id
                 }
               >
                 Correr Backtest
