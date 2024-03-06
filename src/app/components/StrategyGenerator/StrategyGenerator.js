@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -9,6 +9,7 @@ import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
 import getTotalCandlesToAnalyse from '../../helpers/getTotalCandlesToAnalyse';
 import validateStrategy from '../../helpers/validateStrategy';
 import setMissingDefaults from '../../helpers/setMissingDefaults';
+import promptExamples from '../../helpers/promptExamples';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
 import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
@@ -36,6 +37,8 @@ const mockupGeneratedStrategy = {
   IDEAL_TRADE_AMOUNT: 1000,
 };
 
+// TODO-p1: Add quesiton mark tooltips a 'entry' y 'exit'
+
 // TODO-p1: HAve a "loading" state variable for each request. To avoid having 2 buttons under a loading state
 
 // TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
@@ -55,12 +58,17 @@ const StrategyGenerator = () => {
   } = useDisclosure();
 
   const { user, token } = useStore();
+
+  const randomExample = useRef(
+    promptExamples[Math.floor(Math.random() * promptExamples.length)],
+  );
+
   const [formState, setFormState] = useState({
     // entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
     // exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
     // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
-    entry: '',
-    exit: '',
+    entry: randomExample.current.entry,
+    exit: randomExample.current.exit,
     strategy: null,
     backtestPeriod: 'week',
     customPeriodFrom: null,
@@ -71,8 +79,11 @@ const StrategyGenerator = () => {
     },
     isValidStrategy: false,
   });
-  console.log('formState: ', formState);
   const resultsRef = useRef(null);
+
+  useEffect(() => {
+    onOpenErrorStrategyModal();
+  }, []);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {

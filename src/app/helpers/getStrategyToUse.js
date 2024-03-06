@@ -7,7 +7,7 @@ export const defaultStrategyParams = {
   UPDATE_SL_EVERY: 0,
   CANDLE_SIZE_MINUTES: 5,
   TICK_INTERVAL_MINUTES: 1,
-  LEVERAGE: 5,
+  LEVERAGE: 1,
 };
 
 function getStrategyToUse(generatedStrategy) {

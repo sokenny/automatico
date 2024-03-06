@@ -479,6 +479,7 @@ const StrategyConfigFields = ({
         <Input
           {...defaultInputProps}
           type="number"
+          // TODO-p1: Permitir decimales en entry spread
           label={withTooltip(<>Entry spread</>, 'START_GAP_PERCENTAGE')}
           placeholder="0"
           onChange={(e) =>

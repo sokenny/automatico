@@ -10,16 +10,23 @@ import {
 import styles from './ErrorStrategyModal.module.css';
 
 const ErrorStrategyModal = ({ isOpen, onOpenChange, errors }) => {
+  const hasErrors = errors.length > 0;
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className={`flex flex-col gap-1 ${styles.title}`}>
-              Error generando estrategia: <span>{errors[0]}</span>
+              {hasErrors ? (
+                <>
+                  Error generando estrategia: <span>{errors[0]}</span>
+                </>
+              ) : (
+                <>Recordá que:</>
+              )}
             </ModalHeader>
             <ModalBody className={styles.body}>
-              <p>Recordá que:</p>
+              {hasErrors && <p>Recordá que:</p>}
               <p>
                 <ul>
                   <li>
@@ -41,8 +48,8 @@ const ErrorStrategyModal = ({ isOpen, onOpenChange, errors }) => {
                 <b>Entry</b>: Si el RSI de ETHUSDT en velas de 5 minutos es
                 mayor a 70, comprar 1k USDT.
                 <br />
-                <b>Exit</b>: Si el precio de ETHUSDT baja un 5% o sube un 3%,
-                cerrar la posición.
+                <b>Exit</b>: Al alcanzar un profit de 3% o pérdida de 1% cerrar
+                la posición.
               </p>
             </ModalBody>
             <ModalFooter>
