@@ -50,6 +50,15 @@ const ErrorStrategyModal = ({ isOpen, onOpenChange, errors }) => {
                 <br />
                 <b>Exit</b>: Al alcanzar un profit de 3% o pérdida de 1% cerrar
                 la posición.
+                <div className={styles.tutorial}>
+                  <a
+                    href="https://www.loom.com/share/0953b357dfad494da4c81f36589a3c6e?sid=9ce5993c-9466-4f3e-b15f-6d00068b2a78"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Ver mini tutorial (2 min.)
+                  </a>
+                </div>
               </p>
             </ModalBody>
             <ModalFooter>
