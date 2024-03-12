@@ -3,27 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Select, SelectItem, Tooltip } from '@nextui-org/react';
 import strategyFieldsTooltips from '../../constants/strategyFieldsTooltips';
+import strategyValidations, {
+  INDICATORS,
+} from '@/app/helpers/strategyValidations';
 import styles from './StrategyConfigFields.module.css';
-
-function isValidPair(value) {
-  return value.endsWith('USDT');
-}
-
-function isPositiveInteger(value) {
-  return value > 0;
-}
-
-function isPositiveOrZeroInteger(value) {
-  return value >= 0;
-}
-
-function isValidLeverage(value) {
-  return value >= 0 && value <= 50;
-}
-
-function isNumber(value) {
-  return !isNaN(value);
-}
 
 const candleSizes = [
   {
@@ -84,28 +67,10 @@ const candleSizes = [
   },
 ];
 
-const indicators = [
-  {
-    value: 'CCI',
-    label: 'CCI',
-  },
-  {
-    value: 'RSI',
-    label: 'RSI',
-  },
-  {
-    value: 'EMA',
-    label: 'EMA',
-  },
-  {
-    value: 'SMA',
-    label: 'SMA',
-  },
-  // {
-  //   value: 'MACD',
-  //   label: 'MACD',
-  // },
-];
+const indicators = INDICATORS.map((indicator) => ({
+  value: indicator,
+  label: indicator,
+}));
 
 const crossDirections = [
   {
@@ -132,10 +97,10 @@ const positionTypes = [
 const StrategyConfigFields = ({
   strategy,
   setStrategy = () => {},
-  onIsValidChange = () => {},
   isEditing = true,
 }) => {
   const isMACrossType = ['EMA', 'SMA'].includes(strategy.INDICATOR);
+  const isMACDType = strategy.INDICATOR === 'MACD';
 
   const defaultInputProps = {
     disabled: false,
@@ -163,41 +128,6 @@ const StrategyConfigFields = ({
     );
   }
 
-  const validations = {
-    'PAIR': isValidPair(strategy.PAIR),
-    'IDEAL_TRADE_AMOUNT': isPositiveInteger(strategy.IDEAL_TRADE_AMOUNT),
-    'INITIAL_BALANCE': isPositiveInteger(strategy.INITIAL_BALANCE),
-    'MAX_WEIGHT_ALLOCATION': isPositiveInteger(strategy.MAX_WEIGHT_ALLOCATION),
-    'LEVERAGE': isValidLeverage(strategy.LEVERAGE),
-    'TAKE_PROFIT': isPositiveInteger(strategy.TAKE_PROFIT),
-    'STOP_LOSS': isPositiveInteger(strategy.STOP_LOSS),
-    'OPERATION_EXPIRY_TIME': isPositiveOrZeroInteger(
-      strategy.OPERATION_EXPIRY_TIME,
-    ),
-    'START_GAP_PERCENTAGE': isPositiveOrZeroInteger(
-      strategy.START_GAP_PERCENTAGE,
-    ),
-    'SIGNAL_TRIGGER.period': isPositiveInteger(strategy.SIGNAL_TRIGGER?.period),
-    'SIGNAL_TRIGGER.cross_percentage': isNumber(
-      strategy.SIGNAL_TRIGGER?.cross_percentage,
-    ),
-    'SIGNAL_TRIGGER.target_value': isNumber(
-      strategy.SIGNAL_TRIGGER?.target_value,
-    ),
-  };
-
-  const formIsValid = Object.values(validations).every((v, i) => {
-    const key = Object.keys(validations)[i];
-    if (key === 'SIGNAL_TRIGGER.cross_percentage' && !isMACrossType)
-      return true;
-    if (key === 'SIGNAL_TRIGGER.target_value' && isMACrossType) return true;
-    return v;
-  });
-
-  useEffect(() => {
-    onIsValidChange(formIsValid);
-  }, [formIsValid]);
-
   return (
     <div className={`${styles.container} ${isEditing ? styles.editing : ''}`}>
       <div className={styles.row}>
@@ -208,7 +138,7 @@ const StrategyConfigFields = ({
           labelPlacement={'outside'}
           onChange={(e) => setStrategy({ ...strategy, PAIR: e.target.value })}
           value={strategy.PAIR}
-          isInvalid={!validations['PAIR']}
+          isInvalid={!strategyValidations.PAIR(strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -227,7 +157,7 @@ const StrategyConfigFields = ({
             })
           }
           value={strategy.IDEAL_TRADE_AMOUNT}
-          isInvalid={!validations['IDEAL_TRADE_AMOUNT']}
+          isInvalid={!strategyValidations.IDEAL_TRADE_AMOUNT(strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -246,7 +176,7 @@ const StrategyConfigFields = ({
             })
           }
           value={strategy.INITIAL_BALANCE}
-          isInvalid={!validations['INITIAL_BALANCE']}
+          isInvalid={!strategyValidations.INITIAL_BALANCE(strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -260,7 +190,7 @@ const StrategyConfigFields = ({
             })
           }
           value={strategy.MAX_WEIGHT_ALLOCATION}
-          isInvalid={!validations['MAX_WEIGHT_ALLOCATION']}
+          isInvalid={!strategyValidations.MAX_WEIGHT_ALLOCATION(strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -271,7 +201,7 @@ const StrategyConfigFields = ({
             setStrategy({ ...strategy, LEVERAGE: parseInt(e.target.value) })
           }
           value={strategy.LEVERAGE}
-          isInvalid={!validations['LEVERAGE']}
+          isInvalid={!strategyValidations.LEVERAGE(strategy)}
         />
       </div>
       <div className={styles.row}>
@@ -325,24 +255,26 @@ const StrategyConfigFields = ({
             </SelectItem>
           ))}
         </Select>
-        <Input
-          {...defaultInputProps}
-          type="number"
-          label={withTooltip(<>Period</>, 'SIGNAL_TRIGGER.period')}
-          placeholder="20"
-          onChange={(e) =>
-            setStrategy({
-              ...strategy,
-              SIGNAL_TRIGGER: {
-                ...strategy.SIGNAL_TRIGGER,
-                period: parseInt(e.target.value),
-              },
-            })
-          }
-          value={strategy.SIGNAL_TRIGGER?.period}
-          isInvalid={!validations['SIGNAL_TRIGGER.period']}
-        />
-        {isMACrossType ? (
+        {!isMACDType && (
+          <Input
+            {...defaultInputProps}
+            type="number"
+            label={withTooltip(<>Period</>, 'SIGNAL_TRIGGER.period')}
+            placeholder="20"
+            onChange={(e) =>
+              setStrategy({
+                ...strategy,
+                SIGNAL_TRIGGER: {
+                  ...strategy.SIGNAL_TRIGGER,
+                  period: parseInt(e.target.value),
+                },
+              })
+            }
+            value={strategy.SIGNAL_TRIGGER?.period}
+            isInvalid={!strategyValidations['SIGNAL_TRIGGER.period'](strategy)}
+          />
+        )}
+        {isMACrossType && (
           <Input
             key={strategy.INDICATOR}
             {...defaultInputProps}
@@ -357,14 +289,17 @@ const StrategyConfigFields = ({
                 ...strategy,
                 SIGNAL_TRIGGER: {
                   ...strategy.SIGNAL_TRIGGER,
-                  cross_percentage: parseInt(e.target.value),
+                  cross_percentage: parseFloat(e.target.value),
                 },
               })
             }
             value={strategy.SIGNAL_TRIGGER?.cross_percentage}
-            isInvalid={!validations['SIGNAL_TRIGGER.cross_percentage']}
+            isInvalid={
+              !strategyValidations['SIGNAL_TRIGGER.cross_percentage'](strategy)
+            }
           />
-        ) : (
+        )}
+        {!isMACrossType && !isMACDType && (
           <Input
             key={strategy.INDICATOR}
             {...defaultInputProps}
@@ -384,7 +319,9 @@ const StrategyConfigFields = ({
               })
             }
             value={strategy.SIGNAL_TRIGGER?.target_value}
-            isInvalid={!validations['SIGNAL_TRIGGER.target_value']}
+            isInvalid={
+              !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
+            }
           />
         )}
         <Select
@@ -458,10 +395,13 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Take profit</>, 'TAKE_PROFIT')}
           placeholder="1"
           onChange={(e) =>
-            setStrategy({ ...strategy, TAKE_PROFIT: parseInt(e.target.value) })
+            setStrategy({
+              ...strategy,
+              TAKE_PROFIT: parseFloat(e.target.value),
+            })
           }
           value={strategy.TAKE_PROFIT}
-          isInvalid={!validations['TAKE_PROFIT']}
+          isInvalid={!strategyValidations['TAKE_PROFIT'](strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -469,27 +409,26 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Stop loss</>, 'STOP_LOSS')}
           placeholder="1"
           onChange={(e) =>
-            setStrategy({ ...strategy, STOP_LOSS: parseInt(e.target.value) })
+            setStrategy({ ...strategy, STOP_LOSS: parseFloat(e.target.value) })
           }
           value={strategy.STOP_LOSS}
-          isInvalid={!validations['STOP_LOSS']}
+          isInvalid={!strategyValidations['STOP_LOSS'](strategy)}
         />
       </div>
       <div className={styles.row}>
         <Input
           {...defaultInputProps}
           type="number"
-          // TODO-p1: Permitir decimales en entry spread
           label={withTooltip(<>Entry spread</>, 'START_GAP_PERCENTAGE')}
           placeholder="0"
           onChange={(e) =>
             setStrategy({
               ...strategy,
-              START_GAP_PERCENTAGE: parseInt(e.target.value),
+              START_GAP_PERCENTAGE: parseFloat(e.target.value),
             })
           }
           value={strategy.START_GAP_PERCENTAGE}
-          isInvalid={!validations['START_GAP_PERCENTAGE']}
+          isInvalid={!strategyValidations['START_GAP_PERCENTAGE'](strategy)}
         />
         <Input
           {...defaultInputProps}
@@ -503,7 +442,7 @@ const StrategyConfigFields = ({
             })
           }
           value={strategy.OPERATION_EXPIRY_TIME}
-          isInvalid={!validations['OPERATION_EXPIRY_TIME']}
+          isInvalid={!strategyValidations['OPERATION_EXPIRY_TIME'](strategy)}
         />
       </div>
     </div>

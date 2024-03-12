@@ -9,40 +9,39 @@ import {
 } from '@nextui-org/react';
 import styles from './ErrorStrategyModal.module.css';
 
-const ErrorStrategyModal = ({ isOpen, onOpenChange, errors }) => {
-  const hasErrors = errors.length > 0;
+const ErrorStrategyModal = ({ isOpen, onOpenChange, error }) => {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className={`flex flex-col gap-1 ${styles.title}`}>
-              {hasErrors ? (
+              {error ? (
                 <>
-                  Error generando estrategia: <span>{errors[0]}</span>
+                  Error generando estrategia: <span>{error}</span>
                 </>
               ) : (
                 <>Recordá que:</>
               )}
             </ModalHeader>
             <ModalBody className={styles.body}>
-              {hasErrors && <p>Recordá que:</p>}
+              {error && <p>Recordá que:</p>}
               <p>
-                <ul>
-                  <li>
+                <div className={styles.items}>
+                  <div>
                     <b>1.</b> A momento solo permitimos criterios de entrada a
                     partir de los indicadores: <span>SMA, EMA, RSI, CCI</span>.
-                  </li>
-                  <li>
+                  </div>
+                  <div>
                     <b>2.</b> Solo trabajamos con <span>cryptos</span>, siempre
                     sobre el <span>USDT</span>.
-                  </li>
-                  <li>
+                  </div>
+                  <div>
                     <b>3.</b> El criterio de salida tiene que ser a partir de un{' '}
                     <span>stop loss</span> o un <span>take profit</span>{' '}
                     cumplido.
-                  </li>
-                </ul>
+                  </div>
+                </div>
                 <br />
                 Por ejemplo: <br />
                 <b>Entry</b>: Si el RSI de ETHUSDT en velas de 5 minutos es

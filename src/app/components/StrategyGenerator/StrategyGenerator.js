@@ -75,15 +75,28 @@ const StrategyGenerator = () => {
     customPeriodTo: null,
     backtestResults: null,
     errors: {
-      strategy: [],
+      strategyGeneration: null,
+      strategyConfig: [],
     },
-    isValidStrategy: false,
   });
   const resultsRef = useRef(null);
 
   useEffect(() => {
     onOpenErrorStrategyModal();
   }, []);
+
+  useEffect(() => {
+    if (formState.strategy) {
+      const errors = validateStrategy(formState.strategy);
+      setFormState({
+        ...formState,
+        errors: {
+          ...formState.errors,
+          strategyConfig: errors,
+        },
+      });
+    }
+  }, [formState.strategy]);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {
@@ -134,7 +147,7 @@ const StrategyGenerator = () => {
             strategy: setMissingDefaults(strategy),
             errors: {
               ...formState.errors,
-              strategy: errors,
+              strategyConfig: errors,
             },
           });
         } else {
@@ -143,7 +156,7 @@ const StrategyGenerator = () => {
             ...formState,
             errors: {
               ...formState.errors,
-              strategy: [data?.error || 'Error creando estrategia'],
+              strategyGeneration: data?.error || 'Error creando estrategia',
             },
           });
           onOpenErrorStrategyModal();
@@ -288,7 +301,7 @@ const StrategyGenerator = () => {
       <ErrorStrategyModal
         isOpen={isErrorStrategyModalOpen}
         onOpenChange={onOpenErrorStrategyModalChange}
-        errors={formState?.errors?.strategy}
+        error={formState?.errors?.strategyGeneration}
       />
       <div className={styles.feedback}>
         <div className={styles.items}>
@@ -360,13 +373,11 @@ const StrategyGenerator = () => {
               )}
             </div>
           </div>
-          {formState.errors.strategy.length > 0 && (
+          {formState.errors.strategyGeneration && (
             <div className={styles.errorsList}>
-              {formState.errors.strategy.map((error, index) => (
-                <div key={index} className={styles.error}>
-                  <div>{error}</div>
-                </div>
-              ))}
+              <div key={index} className={styles.error}>
+                <div>{formState.errors.strategyGeneration}</div>
+              </div>
             </div>
           )}
         </div>
@@ -420,12 +431,6 @@ const StrategyGenerator = () => {
                     },
                   })
                 }
-                onIsValidChange={(isValid) =>
-                  setFormState({
-                    ...formState,
-                    isValidStrategy: isValid,
-                  })
-                }
               />
             </div>
             <div className={styles.stratDetailsActions}>
@@ -433,23 +438,21 @@ const StrategyGenerator = () => {
                 {/* <a>Consultar documentación</a> */}
               </div>
             </div>
-            {typeof formState.errors.strategy == 'string' ||
-              (formState.errors.strategy.length > 0 &&
-                !formState.isValidStrategy && (
-                  <div className={styles.strategyErrors}>
-                    <div className={styles.errorsTitle}>
-                      Corregí los siguientes parámetros para continuar:
+            {formState.errors.strategyConfig.length > 0 && (
+              <div className={styles.strategyErrors}>
+                <div className={styles.errorsTitle}>
+                  Corregí los siguientes parámetros para continuar:
+                </div>
+                <div className={styles.errorsList}>
+                  {formState.errors.strategyConfig.map((error, index) => (
+                    <div key={index} className={styles.error}>
+                      <div className={styles.field}>{error.field}:</div>
+                      <div>{error.message}</div>
                     </div>
-                    <div className={styles.errorsList}>
-                      {formState.errors.strategy.map((error, index) => (
-                        <div key={index} className={styles.error}>
-                          <div className={styles.field}>{error.field}:</div>
-                          <div>{error.message}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className={styles.step}>
             <div className={styles.backtestPeriod}>
@@ -478,9 +481,7 @@ const StrategyGenerator = () => {
                 onClick={handleRunBacktest}
                 isDisabled={
                   loading ||
-                  (formState.errors.strategy.length > 0 &&
-                    !formState.isValidStrategy) ||
-                  !formState.isValidStrategy ||
+                  formState.errors.strategyConfig.length > 0 ||
                   !user?.id
                 }
               >
