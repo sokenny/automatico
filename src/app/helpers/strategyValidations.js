@@ -19,7 +19,7 @@ function isNumber(value) {
 }
 
 // TODO-p1 create enums for indicators, cross directions, etc
-export const INDICATORS = ['MACD', 'SMA', 'EMA', 'RSI', 'CCI'];
+export const INDICATORS = ['MACD', 'SMA', 'EMA', 'RSI', 'CCI', 'BBANDS'];
 
 const strategyValidations = {
   'PAIR': (strategy) => isValidPair(strategy.PAIR),
@@ -40,15 +40,22 @@ const strategyValidations = {
     isPositiveInteger(strategy.SIGNAL_TRIGGER?.period),
   'SIGNAL_TRIGGER.cross_percentage': (strategy) =>
     isNumber(strategy.SIGNAL_TRIGGER?.cross_percentage),
-  'SIGNAL_TRIGGER.target_value': (strategy) =>
-    isNumber(strategy.SIGNAL_TRIGGER?.target_value) &&
-    ['RSI', 'CCI'].includes(strategy.INDICATOR),
+  'SIGNAL_TRIGGER.target_value': (strategy) => {
+    if (['RSI', 'CCI'].includes(strategy.INDICATOR)) {
+      return isNumber(strategy.SIGNAL_TRIGGER?.target_value);
+    }
+    return true;
+  },
   'SIGNAL_TRIGGER.cross_direction': (strategy) =>
     ['above_to_below', 'below_to_above'].includes(
       strategy.SIGNAL_TRIGGER?.cross_direction,
     ),
   'SIGNAL_TRIGGER.position_type': (strategy) =>
     ['long', 'short'].includes(strategy.SIGNAL_TRIGGER?.position_type),
+  'SIGNAL_TRIGGER.band_to_cross': (strategy) =>
+    ['upper', 'lower'].includes(strategy.SIGNAL_TRIGGER?.band_to_cross),
+  'SIGNAL_TRIGGER.period_deviation': (strategy) =>
+    isPositiveOrZeroInteger(strategy.SIGNAL_TRIGGER?.period_deviation),
 };
 
 export default strategyValidations;

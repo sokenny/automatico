@@ -72,6 +72,17 @@ const indicators = INDICATORS.map((indicator) => ({
   label: indicator,
 }));
 
+const bandsToCross = [
+  {
+    value: 'upper',
+    label: 'Upper',
+  },
+  {
+    value: 'lower',
+    label: 'Lower',
+  },
+];
+
 const crossDirections = [
   {
     value: 'above_to_below',
@@ -101,6 +112,7 @@ const StrategyConfigFields = ({
 }) => {
   const isMACrossType = ['EMA', 'SMA'].includes(strategy.INDICATOR);
   const isMACDType = strategy.INDICATOR === 'MACD';
+  const isBBANDSType = strategy.INDICATOR === 'BBANDS';
 
   const defaultInputProps = {
     disabled: false,
@@ -274,6 +286,62 @@ const StrategyConfigFields = ({
             isInvalid={!strategyValidations['SIGNAL_TRIGGER.period'](strategy)}
           />
         )}
+        {isBBANDSType && (
+          <>
+          <Input
+            {...defaultInputProps}
+            type="number"
+            label={withTooltip(
+              <>Deviation</>,
+              'SIGNAL_TRIGGER.period_deviation',
+            )}
+            placeholder="2"
+            onChange={(e) =>
+              setStrategy({
+                ...strategy,
+                SIGNAL_TRIGGER: {
+                  ...strategy.SIGNAL_TRIGGER,
+                  period_deviation: parseInt(e.target.value),
+                },
+              })
+            }
+            value={strategy.SIGNAL_TRIGGER?.period_deviation}
+            isInvalid={
+              !strategyValidations['SIGNAL_TRIGGER.period_deviation'](strategy)
+            }
+          />
+          {/* band to cross */}
+          <Select
+            {...defaultInputProps}
+            className={styles.select}
+            label={withTooltip(<>Band to cross</>, 'SIGNAL_TRIGGER.band_to_cross')}
+            placeholder="Select a band"
+            disallowEmptySelection
+            selectedKeys={[strategy.SIGNAL_TRIGGER?.band_to_cross]}
+            onChange={(e) => {
+              setStrategy({
+                ...strategy,
+                SIGNAL_TRIGGER: {
+                  ...strategy.SIGNAL_TRIGGER,
+                  band_to_cross: e.target.value,
+                },
+              });
+            }}
+            selectionMode="single"
+          >
+            {bandsToCross.map((band) => (
+              <SelectItem
+
+                key={band.value}
+                value={band.value}
+                className={styles.selectItem}
+              >
+                {band.label}
+              </SelectItem>
+            ))}
+          </Select>
+          </>
+        )}
         {isMACrossType && (
           <Input
             key={strategy.INDICATOR}
@@ -299,31 +367,33 @@ const StrategyConfigFields = ({
             }
           />
         )}
-        {!isMACrossType && !isMACDType && (
-          <Input
-            key={strategy.INDICATOR}
-            {...defaultInputProps}
-            type="number"
-            label={withTooltip(
-              <>Indicator value</>,
-              'SIGNAL_TRIGGER.target_value',
-            )}
-            placeholder="70"
-            onChange={(e) =>
-              setStrategy({
-                ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
-                  target_value: parseInt(e.target.value),
-                },
-              })
-            }
-            value={strategy.SIGNAL_TRIGGER?.target_value}
-            isInvalid={
-              !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
-            }
-          />
-        )}
+        {!isMACrossType &&
+          !isMACDType &&
+          !isBBANDSType && (
+            <Input
+              key={strategy.INDICATOR}
+              {...defaultInputProps}
+              type="number"
+              label={withTooltip(
+                <>Indicator value</>,
+                'SIGNAL_TRIGGER.target_value',
+              )}
+              placeholder="70"
+              onChange={(e) =>
+                setStrategy({
+                  ...strategy,
+                  SIGNAL_TRIGGER: {
+                    ...strategy.SIGNAL_TRIGGER,
+                    target_value: parseInt(e.target.value),
+                  },
+                })
+              }
+              value={strategy.SIGNAL_TRIGGER?.target_value}
+              isInvalid={
+                !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
+              }
+            />,
+          )}
         <Select
           {...defaultInputProps}
           className={styles.select}

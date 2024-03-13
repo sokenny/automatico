@@ -30,7 +30,8 @@ const ErrorStrategyModal = ({ isOpen, onOpenChange, error }) => {
                 <div className={styles.items}>
                   <div>
                     <b>1.</b> A momento solo permitimos criterios de entrada a
-                    partir de los indicadores: <span>SMA, EMA, RSI, CCI</span>.
+                    partir de los indicadores:{' '}
+                    <span>MACD, Bollinger Bands, RSI, SMA, EMA, CCI</span>.
                   </div>
                   <div>
                     <b>2.</b> Solo trabajamos con <span>cryptos</span>, siempre
