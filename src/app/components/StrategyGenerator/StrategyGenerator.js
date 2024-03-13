@@ -83,7 +83,7 @@ const StrategyGenerator = () => {
 
   useEffect(() => {
     onOpenErrorStrategyModal();
-  }, []);
+  }, [onOpenErrorStrategyModal]);
 
   useEffect(() => {
     if (formState.strategy) {
@@ -96,7 +96,7 @@ const StrategyGenerator = () => {
         },
       });
     }
-  }, [formState.strategy]);
+  }, [formState, setFormState]);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {

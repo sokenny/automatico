@@ -288,58 +288,62 @@ const StrategyConfigFields = ({
         )}
         {isBBANDSType && (
           <>
-          <Input
-            {...defaultInputProps}
-            type="number"
-            label={withTooltip(
-              <>Deviation</>,
-              'SIGNAL_TRIGGER.period_deviation',
-            )}
-            placeholder="2"
-            onChange={(e) =>
-              setStrategy({
-                ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
-                  period_deviation: parseInt(e.target.value),
-                },
-              })
-            }
-            value={strategy.SIGNAL_TRIGGER?.period_deviation}
-            isInvalid={
-              !strategyValidations['SIGNAL_TRIGGER.period_deviation'](strategy)
-            }
-          />
-          {/* band to cross */}
-          <Select
-            {...defaultInputProps}
-            className={styles.select}
-            label={withTooltip(<>Band to cross</>, 'SIGNAL_TRIGGER.band_to_cross')}
-            placeholder="Select a band"
-            disallowEmptySelection
-            selectedKeys={[strategy.SIGNAL_TRIGGER?.band_to_cross]}
-            onChange={(e) => {
-              setStrategy({
-                ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
-                  band_to_cross: e.target.value,
-                },
-              });
-            }}
-            selectionMode="single"
-          >
-            {bandsToCross.map((band) => (
-              <SelectItem
-
-                key={band.value}
-                value={band.value}
-                className={styles.selectItem}
-              >
-                {band.label}
-              </SelectItem>
-            ))}
-          </Select>
+            <Input
+              {...defaultInputProps}
+              type="number"
+              label={withTooltip(
+                <>Deviation</>,
+                'SIGNAL_TRIGGER.period_deviation',
+              )}
+              placeholder="2"
+              onChange={(e) =>
+                setStrategy({
+                  ...strategy,
+                  SIGNAL_TRIGGER: {
+                    ...strategy.SIGNAL_TRIGGER,
+                    period_deviation: parseInt(e.target.value),
+                  },
+                })
+              }
+              value={strategy.SIGNAL_TRIGGER?.period_deviation}
+              isInvalid={
+                !strategyValidations['SIGNAL_TRIGGER.period_deviation'](
+                  strategy,
+                )
+              }
+            />
+            {/* band to cross */}
+            <Select
+              {...defaultInputProps}
+              className={styles.select}
+              label={withTooltip(
+                <>Band to cross</>,
+                'SIGNAL_TRIGGER.band_to_cross',
+              )}
+              placeholder="Select a band"
+              disallowEmptySelection
+              selectedKeys={[strategy.SIGNAL_TRIGGER?.band_to_cross]}
+              onChange={(e) => {
+                setStrategy({
+                  ...strategy,
+                  SIGNAL_TRIGGER: {
+                    ...strategy.SIGNAL_TRIGGER,
+                    band_to_cross: e.target.value,
+                  },
+                });
+              }}
+              selectionMode="single"
+            >
+              {bandsToCross.map((band) => (
+                <SelectItem
+                  key={band.value}
+                  value={band.value}
+                  className={styles.selectItem}
+                >
+                  {band.label}
+                </SelectItem>
+              ))}
+            </Select>
           </>
         )}
         {isMACrossType && (
@@ -367,33 +371,31 @@ const StrategyConfigFields = ({
             }
           />
         )}
-        {!isMACrossType &&
-          !isMACDType &&
-          !isBBANDSType && (
-            <Input
-              key={strategy.INDICATOR}
-              {...defaultInputProps}
-              type="number"
-              label={withTooltip(
-                <>Indicator value</>,
-                'SIGNAL_TRIGGER.target_value',
-              )}
-              placeholder="70"
-              onChange={(e) =>
-                setStrategy({
-                  ...strategy,
-                  SIGNAL_TRIGGER: {
-                    ...strategy.SIGNAL_TRIGGER,
-                    target_value: parseInt(e.target.value),
-                  },
-                })
-              }
-              value={strategy.SIGNAL_TRIGGER?.target_value}
-              isInvalid={
-                !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
-              }
-            />,
-          )}
+        {!isMACrossType && !isMACDType && !isBBANDSType && (
+          <Input
+            key={strategy.INDICATOR}
+            {...defaultInputProps}
+            type="number"
+            label={withTooltip(
+              <>Indicator value</>,
+              'SIGNAL_TRIGGER.target_value',
+            )}
+            placeholder="70"
+            onChange={(e) =>
+              setStrategy({
+                ...strategy,
+                SIGNAL_TRIGGER: {
+                  ...strategy.SIGNAL_TRIGGER,
+                  target_value: parseInt(e.target.value),
+                },
+              })
+            }
+            value={strategy.SIGNAL_TRIGGER?.target_value}
+            isInvalid={
+              !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
+            }
+          />
+        )}
         <Select
           {...defaultInputProps}
           className={styles.select}
