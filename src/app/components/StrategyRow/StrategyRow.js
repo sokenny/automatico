@@ -23,18 +23,18 @@ const StrategyRow = ({ strategy, className }) => {
         <div className={styles.dataPointTitle}>Indicator</div>
         <div className={styles.dataPointValue}>
           {strategy.INDICATOR}
-          {strategy.SIGNAL_TRIGGER?.period
-            ? `(${strategy.SIGNAL_TRIGGER?.period})`
+          {strategy.ENTRY_TRIGGER?.period
+            ? `(${strategy.ENTRY_TRIGGER?.period})`
             : ''}
-          {strategy.SIGNAL_TRIGGER?.target_value
-            ? strategy.SIGNAL_TRIGGER?.target_value
+          {strategy.ENTRY_TRIGGER?.target_value
+            ? strategy.ENTRY_TRIGGER?.target_value
             : ''}
         </div>
       </div>
       <div className={`${styles.dataPoint} ${styles.lost}`}>
         <div className={styles.dataPointTitle}>Position Type</div>
         <div className={styles.dataPointValue}>
-          {strategy.SIGNAL_TRIGGER?.position_type}
+          {strategy.ENTRY_TRIGGER?.position_type}
         </div>
       </div>
       <div className={`${styles.dataPoint} ${styles.won}`}>

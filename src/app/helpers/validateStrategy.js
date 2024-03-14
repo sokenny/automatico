@@ -20,24 +20,24 @@ function validateStrategy(payload) {
   }
 
   try {
-    if (!strategyValidations['SIGNAL_TRIGGER.cross_direction'](payload)) {
+    if (!strategyValidations['ENTRY_TRIGGER.cross_direction'](payload)) {
       errors.push({
-        field: 'SIGNAL_TRIGGER.cross_direction',
+        field: 'ENTRY_TRIGGER.cross_direction',
         message:
           'Invalid cross direction. Valid options are: above_to_below, below_to_above.',
       });
     }
 
-    if (!strategyValidations['SIGNAL_TRIGGER.position_type'](payload)) {
+    if (!strategyValidations['ENTRY_TRIGGER.position_type'](payload)) {
       errors.push({
-        field: 'SIGNAL_TRIGGER.position_type',
+        field: 'ENTRY_TRIGGER.position_type',
         message: 'Invalid position type. Valid options are: long, short.',
       });
     }
 
-    if (!strategyValidations['SIGNAL_TRIGGER.target_value'](payload)) {
+    if (!strategyValidations['ENTRY_TRIGGER.target_value'](payload)) {
       errors.push({
-        field: 'SIGNAL_TRIGGER.target_value',
+        field: 'ENTRY_TRIGGER.target_value',
         message: 'The target value must be a number.',
       });
     }
@@ -45,7 +45,7 @@ function validateStrategy(payload) {
     // Optional: Validate cross_percentage and period if needed
   } catch (e) {
     errors.push({
-      field: 'SIGNAL_TRIGGER',
+      field: 'ENTRY_TRIGGER',
       message: 'Invalid JSON format.',
     });
   }

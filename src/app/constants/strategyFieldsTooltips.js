@@ -9,15 +9,15 @@ const strategyFieldsTooltips = {
   'INDICATOR': 'The technical indicator for your trading strategy.',
   'STOP_LOSS':
     'Define a maximum loss percentage at which your trade will be automatically closed to minimize losses.',
-  'SIGNAL_TRIGGER.cross_direction':
+  'ENTRY_TRIGGER.cross_direction':
     "Specifies the direction of the cross required to trigger a trade signal: 'Above to below' for a downward cross, or 'Below to above' for an upward cross.",
-  'SIGNAL_TRIGGER.cross_percentage':
+  'ENTRY_TRIGGER.cross_percentage':
     'The percentage above or below a moving average that the price must cross to trigger the signal.',
-  'SIGNAL_TRIGGER.position_type':
-    "Indicates the type of trade to open when the signal triggers: 'long' for opening a position with the expectation of price increase, or 'short' for opening a position with the expectation of price decrease.",
-  'SIGNAL_TRIGGER.period':
+  'ENTRY_TRIGGER.position_type':
+    "Indicates the type of trade to open when the entry triggers: 'long' for opening a position with the expectation of price increase, or 'short' for opening a position with the expectation of price decrease.",
+  'ENTRY_TRIGGER.period':
     'The window size (number of candles) used for calculating the indicator. If not specified, a default value is used.',
-  'SIGNAL_TRIGGER.target_value':
+  'ENTRY_TRIGGER.target_value':
     'The indicator value that must be crossed to activate the signal. Applicable for strategies based on indicators like RSI or CCI.',
   'CANDLE_SIZE_MINUTES':
     'Determines the timeframe of the candles used for analysis.',

@@ -19,6 +19,41 @@ const promptExamples = [
       'Si el CCI de EOSUSDT supera 100, comprometerse con 1500 USDT en velas de 5 minutos. Usar apalancamiento x2',
     exit: 'Salir con take profit de 3% o stop loss de 1%',
   },
+  {
+    entry:
+      'Cuando el MACD de BTCUSDT cruce el valor 0 en velas de 1 hora, abrir posición long con 1k USDT. Apalancamiento x2.',
+    exit: 'Cerrar la posición si se alcanza un take profit del 2% o stop loss del 3%.',
+  },
+  {
+    entry:
+      'Cuando el precio de DOGEUSDT toque la banda superior de las Bollinger Bands en velas de 15 minutos, abrir posición short con 1k USDT. Apalancamiento x2.',
+    exit: 'Cerrar la posición si se alcanza un take profit del 2% o stop loss del 3%.',
+  },
+  {
+    entry:
+      'Cuando ETHUSDT cruce el EMA20 hacia arriba en velas de 30 minutos, invertir 2000 USDT en posición long. Usar apalancamiento x3.',
+    exit: 'Salir con take profit de 4% o stop loss de 2%',
+  },
+  {
+    entry:
+      'Si el precio de BNBUSDT cae por debajo del SMA50 en velas de 1 hora, entrar en posición short con 1500 USDT.',
+    exit: 'Salir con take profit de 3% o stop loss de 1%',
+  },
+  {
+    entry:
+      'Cuando el MACD de ADAUSDT cruce hacia arriba la línea de señal en velas de 1 día, abrir posición long con 800 USDT. Utilizar apalancamiento x1 (sin apalancamiento).',
+    exit: 'Cerrar la posición si se alcanza un take profit del 5% o stop loss del 3%.',
+  },
+  {
+    entry:
+      'Cuando BTCUSDT cruce el EMA50 hacia arriba en velas diarias, invertir 2000 USDT en posición long. Usar apalancamiento x1 (sin apalancamiento).',
+    exit: 'Cerrar la posición con un take profit del 10% o un stop loss del 5%.',
+  },
+  {
+    entry:
+      'Cuando XRPUSDT supere el valor 60 de RSI en velas diarias, abrir posición short con 1500 USDT.',
+    exit: 'Salir con take profit de 12% o stop loss de 6%',
+  },
 ];
 
 export default promptExamples;

@@ -25,7 +25,7 @@ const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
   INDICATOR: 'CCI',
-  SIGNAL_TRIGGER: {
+  ENTRY_TRIGGER: {
     cross_direction: 'below_to_above',
     position_type: 'long',
     target_value: 200,
@@ -37,10 +37,7 @@ const mockupGeneratedStrategy = {
   IDEAL_TRADE_AMOUNT: 1000,
 };
 
-// TODO-p1: Add quesiton mark tooltips a 'entry' y 'exit'
-
-// TODO-p1: HAve a "loading" state variable for each request. To avoid having 2 buttons under a loading state
-
+// TODO-p2: Add quesiton mark tooltips a 'entry' y 'exit'
 // TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
 
 const StrategyGenerator = () => {
@@ -79,6 +76,8 @@ const StrategyGenerator = () => {
       strategyConfig: [],
     },
   });
+
+  console.log('formState: ', formState);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -96,7 +95,7 @@ const StrategyGenerator = () => {
         },
       });
     }
-  }, [formState, setFormState]);
+  }, [formState.strategy, setFormState]);
 
   useEffect(() => {
     if (formState.backtestResults !== null && resultsRef.current) {

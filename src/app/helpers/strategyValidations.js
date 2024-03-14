@@ -36,26 +36,26 @@ const strategyValidations = {
     isPositiveOrZeroInteger(strategy.OPERATION_EXPIRY_TIME),
   'START_GAP_PERCENTAGE': (strategy) =>
     isPositiveOrZeroInteger(strategy.START_GAP_PERCENTAGE),
-  'SIGNAL_TRIGGER.period': (strategy) =>
-    isPositiveInteger(strategy.SIGNAL_TRIGGER?.period),
-  'SIGNAL_TRIGGER.cross_percentage': (strategy) =>
-    isNumber(strategy.SIGNAL_TRIGGER?.cross_percentage),
-  'SIGNAL_TRIGGER.target_value': (strategy) => {
+  'ENTRY_TRIGGER.period': (strategy) =>
+    isPositiveInteger(strategy.ENTRY_TRIGGER?.period),
+  'ENTRY_TRIGGER.cross_percentage': (strategy) =>
+    isNumber(strategy.ENTRY_TRIGGER?.cross_percentage),
+  'ENTRY_TRIGGER.target_value': (strategy) => {
     if (['RSI', 'CCI'].includes(strategy.INDICATOR)) {
-      return isNumber(strategy.SIGNAL_TRIGGER?.target_value);
+      return isNumber(strategy.ENTRY_TRIGGER?.target_value);
     }
     return true;
   },
-  'SIGNAL_TRIGGER.cross_direction': (strategy) =>
+  'ENTRY_TRIGGER.cross_direction': (strategy) =>
     ['above_to_below', 'below_to_above'].includes(
-      strategy.SIGNAL_TRIGGER?.cross_direction,
+      strategy.ENTRY_TRIGGER?.cross_direction,
     ),
-  'SIGNAL_TRIGGER.position_type': (strategy) =>
-    ['long', 'short'].includes(strategy.SIGNAL_TRIGGER?.position_type),
-  'SIGNAL_TRIGGER.band_to_cross': (strategy) =>
-    ['upper', 'lower'].includes(strategy.SIGNAL_TRIGGER?.band_to_cross),
-  'SIGNAL_TRIGGER.period_deviation': (strategy) =>
-    isPositiveOrZeroInteger(strategy.SIGNAL_TRIGGER?.period_deviation),
+  'ENTRY_TRIGGER.position_type': (strategy) =>
+    ['long', 'short'].includes(strategy.ENTRY_TRIGGER?.position_type),
+  'ENTRY_TRIGGER.band_to_cross': (strategy) =>
+    ['upper', 'lower'].includes(strategy.ENTRY_TRIGGER?.band_to_cross),
+  'ENTRY_TRIGGER.period_deviation': (strategy) =>
+    isPositiveOrZeroInteger(strategy.ENTRY_TRIGGER?.period_deviation),
 };
 
 export default strategyValidations;

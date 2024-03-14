@@ -17,7 +17,7 @@ function buildBacktestRequestPayload(formState) {
   const payload = {
     ...defaultHiddenStrategyParams,
     ...config,
-    SIGNAL_TRIGGER: toPythonDictStyle(config.SIGNAL_TRIGGER),
+    ENTRY_TRIGGER: toPythonDictStyle(config.ENTRY_TRIGGER),
     PERIOD: period,
   };
 

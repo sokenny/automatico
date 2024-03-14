@@ -271,19 +271,19 @@ const StrategyConfigFields = ({
           <Input
             {...defaultInputProps}
             type="number"
-            label={withTooltip(<>Period</>, 'SIGNAL_TRIGGER.period')}
+            label={withTooltip(<>Period</>, 'ENTRY_TRIGGER.period')}
             placeholder="20"
             onChange={(e) =>
               setStrategy({
                 ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
+                ENTRY_TRIGGER: {
+                  ...strategy.ENTRY_TRIGGER,
                   period: parseInt(e.target.value),
                 },
               })
             }
-            value={strategy.SIGNAL_TRIGGER?.period}
-            isInvalid={!strategyValidations['SIGNAL_TRIGGER.period'](strategy)}
+            value={strategy.ENTRY_TRIGGER?.period}
+            isInvalid={!strategyValidations['ENTRY_TRIGGER.period'](strategy)}
           />
         )}
         {isBBANDSType && (
@@ -293,23 +293,21 @@ const StrategyConfigFields = ({
               type="number"
               label={withTooltip(
                 <>Deviation</>,
-                'SIGNAL_TRIGGER.period_deviation',
+                'ENTRY_TRIGGER.period_deviation',
               )}
               placeholder="2"
               onChange={(e) =>
                 setStrategy({
                   ...strategy,
-                  SIGNAL_TRIGGER: {
-                    ...strategy.SIGNAL_TRIGGER,
+                  ENTRY_TRIGGER: {
+                    ...strategy.ENTRY_TRIGGER,
                     period_deviation: parseInt(e.target.value),
                   },
                 })
               }
-              value={strategy.SIGNAL_TRIGGER?.period_deviation}
+              value={strategy.ENTRY_TRIGGER?.period_deviation}
               isInvalid={
-                !strategyValidations['SIGNAL_TRIGGER.period_deviation'](
-                  strategy,
-                )
+                !strategyValidations['ENTRY_TRIGGER.period_deviation'](strategy)
               }
             />
             {/* band to cross */}
@@ -318,16 +316,16 @@ const StrategyConfigFields = ({
               className={styles.select}
               label={withTooltip(
                 <>Band to cross</>,
-                'SIGNAL_TRIGGER.band_to_cross',
+                'ENTRY_TRIGGER.band_to_cross',
               )}
               placeholder="Select a band"
               disallowEmptySelection
-              selectedKeys={[strategy.SIGNAL_TRIGGER?.band_to_cross]}
+              selectedKeys={[strategy.ENTRY_TRIGGER?.band_to_cross]}
               onChange={(e) => {
                 setStrategy({
                   ...strategy,
-                  SIGNAL_TRIGGER: {
-                    ...strategy.SIGNAL_TRIGGER,
+                  ENTRY_TRIGGER: {
+                    ...strategy.ENTRY_TRIGGER,
                     band_to_cross: e.target.value,
                   },
                 });
@@ -353,21 +351,21 @@ const StrategyConfigFields = ({
             type="number"
             label={withTooltip(
               <>Cross percentage</>,
-              'SIGNAL_TRIGGER.cross_percentage',
+              'ENTRY_TRIGGER.cross_percentage',
             )}
             placeholder="0"
             onChange={(e) =>
               setStrategy({
                 ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
+                ENTRY_TRIGGER: {
+                  ...strategy.ENTRY_TRIGGER,
                   cross_percentage: parseFloat(e.target.value),
                 },
               })
             }
-            value={strategy.SIGNAL_TRIGGER?.cross_percentage}
+            value={strategy.ENTRY_TRIGGER?.cross_percentage}
             isInvalid={
-              !strategyValidations['SIGNAL_TRIGGER.cross_percentage'](strategy)
+              !strategyValidations['ENTRY_TRIGGER.cross_percentage'](strategy)
             }
           />
         )}
@@ -378,21 +376,21 @@ const StrategyConfigFields = ({
             type="number"
             label={withTooltip(
               <>Indicator value</>,
-              'SIGNAL_TRIGGER.target_value',
+              'ENTRY_TRIGGER.target_value',
             )}
             placeholder="70"
             onChange={(e) =>
               setStrategy({
                 ...strategy,
-                SIGNAL_TRIGGER: {
-                  ...strategy.SIGNAL_TRIGGER,
+                ENTRY_TRIGGER: {
+                  ...strategy.ENTRY_TRIGGER,
                   target_value: parseInt(e.target.value),
                 },
               })
             }
-            value={strategy.SIGNAL_TRIGGER?.target_value}
+            value={strategy.ENTRY_TRIGGER?.target_value}
             isInvalid={
-              !strategyValidations['SIGNAL_TRIGGER.target_value'](strategy)
+              !strategyValidations['ENTRY_TRIGGER.target_value'](strategy)
             }
           />
         )}
@@ -401,16 +399,16 @@ const StrategyConfigFields = ({
           className={styles.select}
           label={withTooltip(
             <>Cross direction</>,
-            'SIGNAL_TRIGGER.cross_direction',
+            'ENTRY_TRIGGER.cross_direction',
           )}
           placeholder="Select a cross direction"
           disallowEmptySelection
-          selectedKeys={[strategy.SIGNAL_TRIGGER?.cross_direction]}
+          selectedKeys={[strategy.ENTRY_TRIGGER?.cross_direction]}
           onChange={(e) => {
             setStrategy({
               ...strategy,
-              SIGNAL_TRIGGER: {
-                ...strategy.SIGNAL_TRIGGER,
+              ENTRY_TRIGGER: {
+                ...strategy.ENTRY_TRIGGER,
                 cross_direction: e.target.value,
               },
             });
@@ -433,18 +431,15 @@ const StrategyConfigFields = ({
         <Select
           {...defaultInputProps}
           className={styles.select}
-          label={withTooltip(
-            <>Position type</>,
-            'SIGNAL_TRIGGER.position_type',
-          )}
+          label={withTooltip(<>Position type</>, 'ENTRY_TRIGGER.position_type')}
           placeholder="Select position type"
           disallowEmptySelection
-          selectedKeys={[strategy.SIGNAL_TRIGGER?.position_type]}
+          selectedKeys={[strategy.ENTRY_TRIGGER?.position_type]}
           onChange={(e) => {
             setStrategy({
               ...strategy,
-              SIGNAL_TRIGGER: {
-                ...strategy.SIGNAL_TRIGGER,
+              ENTRY_TRIGGER: {
+                ...strategy.ENTRY_TRIGGER,
                 position_type: e.target.value,
               },
             });

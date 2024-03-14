@@ -16,8 +16,8 @@ function setMissingDefaults(strategy) {
   if (!strategy.TICK_INTERVAL_MINUTES) {
     strategy.TICK_INTERVAL_MINUTES = 1;
   }
-  if (!strategy.SIGNAL_TRIGGER.period) {
-    strategy.SIGNAL_TRIGGER.period = getDefaultPeriod(strategy);
+  if (!strategy.ENTRY_TRIGGER.period) {
+    strategy.ENTRY_TRIGGER.period = getDefaultPeriod(strategy);
   }
   return strategy;
 }
