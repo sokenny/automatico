@@ -6,6 +6,12 @@ function sanitizeConfig(config) {
   if (!copy?.ENTRY_TRIGGER?.position_type) {
     copy.ENTRY_TRIGGER.position_type = 'long';
   }
+
+  if (copy.EXIT_TRIGGER) {
+    copy.TAKE_PROFIT = null;
+    copy.STOP_LOSS = null;
+  }
+
   return copy;
 }
 

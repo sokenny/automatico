@@ -38,9 +38,9 @@ const ErrorStrategyModal = ({ isOpen, onOpenChange, error }) => {
                     sobre el <span>USDT</span>.
                   </div>
                   <div>
-                    <b>3.</b> El criterio de salida tiene que ser a partir de un{' '}
-                    <span>stop loss</span> o un <span>take profit</span>{' '}
-                    cumplido.
+                    <b>3.</b> El criterio de salida puede ser a partir de un{' '}
+                    <span>stop loss</span> y <span>take profit</span> cumplido o
+                    a partir de un indicador, similar a como entramos.
                   </div>
                 </div>
                 <br />

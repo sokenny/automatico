@@ -1,73 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Input, Select, SelectItem, Tooltip } from '@nextui-org/react';
 import strategyFieldsTooltips from '../../constants/strategyFieldsTooltips';
-import strategyValidations, {
-  INDICATORS,
-} from '@/app/helpers/strategyValidations';
+import strategyValidations from '@/app/helpers/strategyValidations';
+import validCandleSizes from '@/app/helpers/validCandleSizes';
+import validIndicators from '@/app/helpers/validIndicators';
 import styles from './StrategyConfigFields.module.css';
 
-const candleSizes = [
-  {
-    value: '1',
-    label: '1m',
-  },
-  {
-    value: '5',
-    label: '5m',
-  },
-  {
-    value: '15',
-    label: '15m',
-  },
-  {
-    value: '30',
-    label: '30m',
-  },
-  {
-    value: '60',
-    label: '1h',
-  },
-  {
-    value: '120',
-    label: '2h',
-  },
-  {
-    value: '240',
-    label: '4h',
-  },
-  {
-    value: '360',
-    label: '6h',
-  },
-  {
-    value: '480',
-    label: '8h',
-  },
-  {
-    value: '720',
-    label: '12h',
-  },
-  {
-    value: '1440',
-    label: '1d',
-  },
-  {
-    value: '4320',
-    label: '3d',
-  },
-  {
-    value: '10080',
-    label: '1w',
-  },
-  {
-    value: '43200',
-    label: '1M',
-  },
-];
+const candleSizes = validCandleSizes.map((size) => ({
+  value: size.toString(),
+  label: `${size}m`,
+}));
 
-const indicators = INDICATORS.map((indicator) => ({
+const indicators = validIndicators.map((indicator) => ({
   value: indicator,
   label: indicator,
 }));
@@ -113,6 +59,8 @@ const StrategyConfigFields = ({
   const isMACrossType = ['EMA', 'SMA'].includes(strategy.INDICATOR);
   const isMACDType = strategy.INDICATOR === 'MACD';
   const isBBANDSType = strategy.INDICATOR === 'BBANDS';
+  const exitsWithTPorSL =
+    strategy.TAKE_PROFIT !== null && strategy.STOP_LOSS !== null;
 
   const defaultInputProps = {
     disabled: false,
@@ -242,246 +190,467 @@ const StrategyConfigFields = ({
             </SelectItem>
           ))}
         </Select>
-        <Select
-          {...defaultInputProps}
-          className={styles.select}
-          label={withTooltip(<>Indicator</>, 'INDICATOR')}
-          placeholder="Select an indicator"
-          disallowEmptySelection
-          selectedKeys={[strategy.INDICATOR]}
-          onChange={(e) => {
-            setStrategy({
-              ...strategy,
-              INDICATOR: e.target.value,
-            });
-          }}
-          selectionMode="single"
-        >
-          {indicators.map((indicator) => (
-            <SelectItem
-              key={indicator.value}
-              value={indicator.value}
-              className={styles.selectItem}
-            >
-              {indicator.label}
-            </SelectItem>
-          ))}
-        </Select>
-        {!isMACDType && (
-          <Input
+      </div>
+      <div className={styles.entry}>
+        <div className={styles.configTitle}>Entrar cuando</div>
+        <div className={styles.row}>
+          <Select
             {...defaultInputProps}
-            type="number"
-            label={withTooltip(<>Period</>, 'ENTRY_TRIGGER.period')}
-            placeholder="20"
-            onChange={(e) =>
+            className={styles.select}
+            label={withTooltip(<>Indicator</>, 'INDICATOR')}
+            placeholder="Select an indicator"
+            disallowEmptySelection
+            selectedKeys={[strategy.INDICATOR]}
+            onChange={(e) => {
               setStrategy({
                 ...strategy,
-                ENTRY_TRIGGER: {
-                  ...strategy.ENTRY_TRIGGER,
-                  period: parseInt(e.target.value),
-                },
-              })
-            }
-            value={strategy.ENTRY_TRIGGER?.period}
-            isInvalid={!strategyValidations['ENTRY_TRIGGER.period'](strategy)}
-          />
-        )}
-        {isBBANDSType && (
-          <>
+                INDICATOR: e.target.value,
+              });
+            }}
+            selectionMode="single"
+          >
+            {indicators.map((indicator) => (
+              <SelectItem
+                key={indicator.value}
+                value={indicator.value}
+                className={styles.selectItem}
+              >
+                {indicator.label}
+              </SelectItem>
+            ))}
+          </Select>
+          {!isMACDType && (
             <Input
               {...defaultInputProps}
               type="number"
-              label={withTooltip(
-                <>Deviation</>,
-                'ENTRY_TRIGGER.period_deviation',
-              )}
-              placeholder="2"
+              label={withTooltip(<>Period</>, 'ENTRY_TRIGGER.period')}
+              placeholder="20"
               onChange={(e) =>
                 setStrategy({
                   ...strategy,
                   ENTRY_TRIGGER: {
                     ...strategy.ENTRY_TRIGGER,
-                    period_deviation: parseInt(e.target.value),
+                    period: parseInt(e.target.value),
+                  },
+                  EXIT_TRIGGER: {
+                    ...strategy.EXIT_TRIGGER,
+                    period: parseInt(e.target.value),
                   },
                 })
               }
-              value={strategy.ENTRY_TRIGGER?.period_deviation}
-              isInvalid={
-                !strategyValidations['ENTRY_TRIGGER.period_deviation'](strategy)
-              }
+              value={strategy.ENTRY_TRIGGER?.period}
+              isInvalid={!strategyValidations['ENTRY_TRIGGER.period'](strategy)}
             />
-            {/* band to cross */}
-            <Select
+          )}
+          {isBBANDSType && (
+            <>
+              <Input
+                {...defaultInputProps}
+                type="number"
+                label={withTooltip(
+                  <>Deviation</>,
+                  'ENTRY_TRIGGER.period_deviation',
+                )}
+                placeholder="2"
+                onChange={(e) =>
+                  setStrategy({
+                    ...strategy,
+                    ENTRY_TRIGGER: {
+                      ...strategy.ENTRY_TRIGGER,
+                      period_deviation: parseInt(e.target.value),
+                    },
+                    EXIT_TRIGGER: {
+                      ...strategy.EXIT_TRIGGER,
+                      period_deviation: parseInt(e.target.value),
+                    },
+                  })
+                }
+                value={strategy.ENTRY_TRIGGER?.period_deviation}
+                isInvalid={
+                  !strategyValidations['ENTRY_TRIGGER.period_deviation'](
+                    strategy,
+                  )
+                }
+              />
+              {/* band to cross */}
+              <Select
+                {...defaultInputProps}
+                className={styles.select}
+                label={withTooltip(
+                  <>Band to cross</>,
+                  'ENTRY_TRIGGER.band_to_cross',
+                )}
+                placeholder="Select a band"
+                disallowEmptySelection
+                selectedKeys={[strategy.ENTRY_TRIGGER?.band_to_cross]}
+                onChange={(e) => {
+                  setStrategy({
+                    ...strategy,
+                    ENTRY_TRIGGER: {
+                      ...strategy.ENTRY_TRIGGER,
+                      band_to_cross: e.target.value,
+                    },
+                  });
+                }}
+                selectionMode="single"
+              >
+                {bandsToCross.map((band) => (
+                  <SelectItem
+                    key={band.value}
+                    value={band.value}
+                    className={styles.selectItem}
+                  >
+                    {band.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </>
+          )}
+          {isMACrossType && (
+            <Input
+              key={strategy.INDICATOR}
               {...defaultInputProps}
-              className={styles.select}
+              type="number"
               label={withTooltip(
-                <>Band to cross</>,
-                'ENTRY_TRIGGER.band_to_cross',
+                <>Cross percentage</>,
+                'ENTRY_TRIGGER.cross_percentage',
               )}
-              placeholder="Select a band"
-              disallowEmptySelection
-              selectedKeys={[strategy.ENTRY_TRIGGER?.band_to_cross]}
-              onChange={(e) => {
+              placeholder="0"
+              onChange={(e) =>
                 setStrategy({
                   ...strategy,
                   ENTRY_TRIGGER: {
                     ...strategy.ENTRY_TRIGGER,
-                    band_to_cross: e.target.value,
+                    cross_percentage: parseFloat(e.target.value),
+                  },
+                })
+              }
+              value={strategy.ENTRY_TRIGGER?.cross_percentage}
+              isInvalid={
+                !strategyValidations['ENTRY_TRIGGER.cross_percentage'](strategy)
+              }
+            />
+          )}
+          {!isMACrossType && !isMACDType && !isBBANDSType && (
+            <Input
+              key={strategy.INDICATOR}
+              {...defaultInputProps}
+              type="number"
+              label={withTooltip(
+                <>Indicator value</>,
+                'ENTRY_TRIGGER.target_value',
+              )}
+              placeholder="70"
+              onChange={(e) =>
+                setStrategy({
+                  ...strategy,
+                  ENTRY_TRIGGER: {
+                    ...strategy.ENTRY_TRIGGER,
+                    target_value: parseInt(e.target.value),
+                  },
+                })
+              }
+              value={strategy.ENTRY_TRIGGER?.target_value}
+              isInvalid={
+                !strategyValidations['ENTRY_TRIGGER.target_value'](strategy)
+              }
+            />
+          )}
+          <Select
+            {...defaultInputProps}
+            className={styles.select}
+            label={withTooltip(
+              <>Cross direction</>,
+              'ENTRY_TRIGGER.cross_direction',
+            )}
+            placeholder="Select a cross direction"
+            disallowEmptySelection
+            selectedKeys={[strategy.ENTRY_TRIGGER?.cross_direction]}
+            onChange={(e) => {
+              setStrategy({
+                ...strategy,
+                ENTRY_TRIGGER: {
+                  ...strategy.ENTRY_TRIGGER,
+                  cross_direction: e.target.value,
+                },
+              });
+            }}
+            selectionMode="single"
+          >
+            {crossDirections.map((crossDirection) => (
+              <SelectItem
+                key={crossDirection.value}
+                value={crossDirection.value}
+                className={styles.selectItem}
+              >
+                {crossDirection.label}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            {...defaultInputProps}
+            className={styles.select}
+            label={withTooltip(
+              <>Position type</>,
+              'ENTRY_TRIGGER.position_type',
+            )}
+            placeholder="Select position type"
+            disallowEmptySelection
+            selectedKeys={[strategy.ENTRY_TRIGGER?.position_type]}
+            onChange={(e) => {
+              setStrategy({
+                ...strategy,
+                ENTRY_TRIGGER: {
+                  ...strategy.ENTRY_TRIGGER,
+                  position_type: e.target.value,
+                },
+              });
+            }}
+            selectionMode="single"
+          >
+            {positionTypes.map((positionType) => (
+              <SelectItem
+                key={positionType.value}
+                value={positionType.value}
+                className={styles.selectItem}
+              >
+                {positionType.label}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+      </div>
+      <div className={styles.exit}>
+        <div className={styles.configTitle}>Salir cuando</div>
+        {exitsWithTPorSL ? (
+          <div className={styles.row}>
+            <Input
+              {...defaultInputProps}
+              type="number"
+              label={withTooltip(<>Take profit</>, 'TAKE_PROFIT')}
+              placeholder="1"
+              onChange={(e) =>
+                setStrategy({
+                  ...strategy,
+                  TAKE_PROFIT: parseFloat(e.target.value),
+                })
+              }
+              value={strategy.TAKE_PROFIT}
+              isInvalid={!strategyValidations['TAKE_PROFIT'](strategy)}
+            />
+            <Input
+              {...defaultInputProps}
+              type="number"
+              label={withTooltip(<>Stop loss</>, 'STOP_LOSS')}
+              placeholder="1"
+              onChange={(e) =>
+                setStrategy({
+                  ...strategy,
+                  STOP_LOSS: parseFloat(e.target.value),
+                })
+              }
+              value={strategy.STOP_LOSS}
+              isInvalid={!strategyValidations['STOP_LOSS'](strategy)}
+            />
+          </div>
+        ) : (
+          <div className={styles.row}>
+            <Select
+              {...defaultInputProps}
+              className={styles.select}
+              label={withTooltip(<>Indicator</>, 'INDICATOR')}
+              placeholder="Select an indicator"
+              disallowEmptySelection
+              selectedKeys={[strategy.INDICATOR]}
+              onChange={(e) => {
+                setStrategy({
+                  ...strategy,
+                  INDICATOR: e.target.value,
+                });
+              }}
+              selectionMode="single"
+              isDisabled={true}
+            >
+              {indicators.map((indicator) => (
+                <SelectItem
+                  key={indicator.value}
+                  value={indicator.value}
+                  className={styles.selectItem}
+                >
+                  {indicator.label}
+                </SelectItem>
+              ))}
+            </Select>
+            {!isMACDType && (
+              <Input
+                {...defaultInputProps}
+                type="number"
+                label={withTooltip(<>Period</>, 'EXIT_TRIGGER.period')}
+                placeholder="20"
+                onChange={(e) =>
+                  setStrategy({
+                    ...strategy,
+                    EXIT_TRIGGER: {
+                      ...strategy.EXIT_TRIGGER,
+                      period: parseInt(e.target.value),
+                    },
+                  })
+                }
+                value={strategy.EXIT_TRIGGER?.period}
+                isInvalid={
+                  !strategyValidations['EXIT_TRIGGER.period'](strategy)
+                }
+                isDisabled={true}
+              />
+            )}
+            {isBBANDSType && (
+              <>
+                <Input
+                  {...defaultInputProps}
+                  type="number"
+                  label={withTooltip(
+                    <>Deviation</>,
+                    'EXIT_TRIGGER.period_deviation',
+                  )}
+                  placeholder="2"
+                  onChange={(e) =>
+                    setStrategy({
+                      ...strategy,
+                      EXIT_TRIGGER: {
+                        ...strategy.EXIT_TRIGGER,
+                        period_deviation: parseInt(e.target.value),
+                      },
+                    })
+                  }
+                  value={strategy.EXIT_TRIGGER?.period_deviation}
+                  isInvalid={
+                    !strategyValidations['EXIT_TRIGGER.period_deviation'](
+                      strategy,
+                    )
+                  }
+                  isDisabled={true}
+                />
+                {/* band to cross */}
+                <Select
+                  {...defaultInputProps}
+                  className={styles.select}
+                  label={withTooltip(
+                    <>Band to cross</>,
+                    'EXIT_TRIGGER.band_to_cross',
+                  )}
+                  placeholder="Select a band"
+                  disallowEmptySelection
+                  selectedKeys={[strategy.EXIT_TRIGGER?.band_to_cross]}
+                  onChange={(e) => {
+                    setStrategy({
+                      ...strategy,
+                      EXIT_TRIGGER: {
+                        ...strategy.EXIT_TRIGGER,
+                        band_to_cross: e.target.value,
+                      },
+                    });
+                  }}
+                  selectionMode="single"
+                >
+                  {bandsToCross.map((band) => (
+                    <SelectItem
+                      key={band.value}
+                      value={band.value}
+                      className={styles.selectItem}
+                    >
+                      {band.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </>
+            )}
+            {isMACrossType && (
+              <Input
+                key={strategy.INDICATOR}
+                {...defaultInputProps}
+                type="number"
+                label={withTooltip(
+                  <>Cross percentage</>,
+                  'EXIT_TRIGGER.cross_percentage',
+                )}
+                placeholder="0"
+                onChange={(e) =>
+                  setStrategy({
+                    ...strategy,
+                    EXIT_TRIGGER: {
+                      ...strategy.EXIT_TRIGGER,
+                      cross_percentage: parseFloat(e.target.value),
+                    },
+                  })
+                }
+                value={strategy.EXIT_TRIGGER?.cross_percentage}
+                isInvalid={
+                  !strategyValidations['EXIT_TRIGGER.cross_percentage'](
+                    strategy,
+                  )
+                }
+              />
+            )}
+            {!isMACrossType && !isMACDType && !isBBANDSType && (
+              <Input
+                key={strategy.INDICATOR}
+                {...defaultInputProps}
+                type="number"
+                label={withTooltip(
+                  <>Indicator value</>,
+                  'EXIT_TRIGGER.target_value',
+                )}
+                placeholder="70"
+                onChange={(e) =>
+                  setStrategy({
+                    ...strategy,
+                    EXIT_TRIGGER: {
+                      ...strategy.EXIT_TRIGGER,
+                      target_value: parseInt(e.target.value),
+                    },
+                  })
+                }
+                value={strategy.EXIT_TRIGGER?.target_value}
+                isInvalid={
+                  !strategyValidations['EXIT_TRIGGER.target_value'](strategy)
+                }
+              />
+            )}
+            <Select
+              {...defaultInputProps}
+              className={styles.select}
+              label={withTooltip(
+                <>Cross direction</>,
+                'EXIT_TRIGGER.cross_direction',
+              )}
+              placeholder="Select a cross direction"
+              disallowEmptySelection
+              selectedKeys={[strategy.EXIT_TRIGGER?.cross_direction]}
+              onChange={(e) => {
+                setStrategy({
+                  ...strategy,
+                  EXIT_TRIGGER: {
+                    ...strategy.EXIT_TRIGGER,
+                    cross_direction: e.target.value,
                   },
                 });
               }}
               selectionMode="single"
             >
-              {bandsToCross.map((band) => (
+              {crossDirections.map((crossDirection) => (
                 <SelectItem
-                  key={band.value}
-                  value={band.value}
+                  key={crossDirection.value}
+                  value={crossDirection.value}
                   className={styles.selectItem}
                 >
-                  {band.label}
+                  {crossDirection.label}
                 </SelectItem>
               ))}
             </Select>
-          </>
+          </div>
         )}
-        {isMACrossType && (
-          <Input
-            key={strategy.INDICATOR}
-            {...defaultInputProps}
-            type="number"
-            label={withTooltip(
-              <>Cross percentage</>,
-              'ENTRY_TRIGGER.cross_percentage',
-            )}
-            placeholder="0"
-            onChange={(e) =>
-              setStrategy({
-                ...strategy,
-                ENTRY_TRIGGER: {
-                  ...strategy.ENTRY_TRIGGER,
-                  cross_percentage: parseFloat(e.target.value),
-                },
-              })
-            }
-            value={strategy.ENTRY_TRIGGER?.cross_percentage}
-            isInvalid={
-              !strategyValidations['ENTRY_TRIGGER.cross_percentage'](strategy)
-            }
-          />
-        )}
-        {!isMACrossType && !isMACDType && !isBBANDSType && (
-          <Input
-            key={strategy.INDICATOR}
-            {...defaultInputProps}
-            type="number"
-            label={withTooltip(
-              <>Indicator value</>,
-              'ENTRY_TRIGGER.target_value',
-            )}
-            placeholder="70"
-            onChange={(e) =>
-              setStrategy({
-                ...strategy,
-                ENTRY_TRIGGER: {
-                  ...strategy.ENTRY_TRIGGER,
-                  target_value: parseInt(e.target.value),
-                },
-              })
-            }
-            value={strategy.ENTRY_TRIGGER?.target_value}
-            isInvalid={
-              !strategyValidations['ENTRY_TRIGGER.target_value'](strategy)
-            }
-          />
-        )}
-        <Select
-          {...defaultInputProps}
-          className={styles.select}
-          label={withTooltip(
-            <>Cross direction</>,
-            'ENTRY_TRIGGER.cross_direction',
-          )}
-          placeholder="Select a cross direction"
-          disallowEmptySelection
-          selectedKeys={[strategy.ENTRY_TRIGGER?.cross_direction]}
-          onChange={(e) => {
-            setStrategy({
-              ...strategy,
-              ENTRY_TRIGGER: {
-                ...strategy.ENTRY_TRIGGER,
-                cross_direction: e.target.value,
-              },
-            });
-          }}
-          selectionMode="single"
-        >
-          {crossDirections.map((crossDirection) => (
-            <SelectItem
-              key={crossDirection.value}
-              value={crossDirection.value}
-              className={styles.selectItem}
-            >
-              {crossDirection.label}
-            </SelectItem>
-          ))}
-        </Select>
       </div>
 
-      <div className={styles.row}>
-        <Select
-          {...defaultInputProps}
-          className={styles.select}
-          label={withTooltip(<>Position type</>, 'ENTRY_TRIGGER.position_type')}
-          placeholder="Select position type"
-          disallowEmptySelection
-          selectedKeys={[strategy.ENTRY_TRIGGER?.position_type]}
-          onChange={(e) => {
-            setStrategy({
-              ...strategy,
-              ENTRY_TRIGGER: {
-                ...strategy.ENTRY_TRIGGER,
-                position_type: e.target.value,
-              },
-            });
-          }}
-          selectionMode="single"
-        >
-          {positionTypes.map((positionType) => (
-            <SelectItem
-              key={positionType.value}
-              value={positionType.value}
-              className={styles.selectItem}
-            >
-              {positionType.label}
-            </SelectItem>
-          ))}
-        </Select>
-        <Input
-          {...defaultInputProps}
-          type="number"
-          label={withTooltip(<>Take profit</>, 'TAKE_PROFIT')}
-          placeholder="1"
-          onChange={(e) =>
-            setStrategy({
-              ...strategy,
-              TAKE_PROFIT: parseFloat(e.target.value),
-            })
-          }
-          value={strategy.TAKE_PROFIT}
-          isInvalid={!strategyValidations['TAKE_PROFIT'](strategy)}
-        />
-        <Input
-          {...defaultInputProps}
-          type="number"
-          label={withTooltip(<>Stop loss</>, 'STOP_LOSS')}
-          placeholder="1"
-          onChange={(e) =>
-            setStrategy({ ...strategy, STOP_LOSS: parseFloat(e.target.value) })
-          }
-          value={strategy.STOP_LOSS}
-          isInvalid={!strategyValidations['STOP_LOSS'](strategy)}
-        />
-      </div>
       <div className={styles.row}>
         <Input
           {...defaultInputProps}

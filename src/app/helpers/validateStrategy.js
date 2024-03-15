@@ -1,4 +1,6 @@
-import strategyValidations, { INDICATORS } from './strategyValidations';
+import strategyValidations from './strategyValidations';
+import validCandleSizes from './validCandleSizes';
+import validIndicators from './validIndicators';
 
 function validateStrategy(payload) {
   console.log('payload en validator: ', payload);
@@ -15,7 +17,9 @@ function validateStrategy(payload) {
     errors.push({
       field: 'INDICATOR',
       message:
-        'Invalid indicator. Valid options are: ' + INDICATORS.join(', ') + '.',
+        'Invalid indicator. Valid options are: ' +
+        validIndicators.join(', ') +
+        '.',
     });
   }
 
@@ -50,6 +54,30 @@ function validateStrategy(payload) {
     });
   }
 
+  try {
+    if (!strategyValidations['EXIT_TRIGGER.cross_direction'](payload)) {
+      errors.push({
+        field: 'EXIT_TRIGGER.cross_direction',
+        message:
+          'Invalid cross direction. Valid options are: above_to_below, below_to_above.',
+      });
+    }
+
+    if (!strategyValidations['EXIT_TRIGGER.target_value'](payload)) {
+      errors.push({
+        field: 'EXIT_TRIGGER.target_value',
+        message: 'The target value must be a number.',
+      });
+    }
+
+    // Optional: Validate cross_percentage and period if needed
+  } catch (e) {
+    errors.push({
+      field: 'EXIT_TRIGGER',
+      message: 'Invalid JSON format.',
+    });
+  }
+
   if (!strategyValidations['TAKE_PROFIT'](payload)) {
     errors.push({
       field: 'TAKE_PROFIT',
@@ -78,7 +106,6 @@ function validateStrategy(payload) {
     });
   }
 
-  const validCandleSizes = [1, 3, 5, 15, 30, 60];
   if (!validCandleSizes.includes(payload.CANDLE_SIZE_MINUTES)) {
     errors.push({
       field: 'CANDLE_SIZE_MINUTES',

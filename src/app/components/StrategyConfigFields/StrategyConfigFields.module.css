@@ -27,6 +27,11 @@
   padding: 12px;
 }
 
+.entry, .exit {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
 @media (max-width: 720px) {
 
   .row {
