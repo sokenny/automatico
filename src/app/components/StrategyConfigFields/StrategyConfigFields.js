@@ -8,9 +8,27 @@ import validCandleSizes from '@/app/helpers/validCandleSizes';
 import validIndicators from '@/app/helpers/validIndicators';
 import styles from './StrategyConfigFields.module.css';
 
+const candleSizeToLabel = {
+  1: '1m',
+  3: '3m',
+  5: '5m',
+  15: '15m',
+  30: '30m',
+  60: '1h',
+  120: '2h',
+  240: '4h',
+  360: '6h',
+  480: '8h',
+  720: '12h',
+  1440: '1d',
+  4320: '3d',
+  10080: '1w',
+  43200: '1M',
+};
+
 const candleSizes = validCandleSizes.map((size) => ({
   value: size.toString(),
-  label: `${size}m`,
+  label: candleSizeToLabel[size],
 }));
 
 const indicators = validIndicators.map((indicator) => ({

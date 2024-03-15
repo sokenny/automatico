@@ -1,5 +1,4 @@
 'use client';
-// TODO-p1 delete chart_data column from backtests table
 import React, { useState, useRef, useEffect } from 'react';
 import { createChart } from 'lightweight-charts';
 import { Spinner } from '@nextui-org/react';

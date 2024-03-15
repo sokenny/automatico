@@ -212,7 +212,6 @@ const StrategyGenerator = () => {
           backtestResults: {
             ...data.results,
             backtestId: data.backtest_id,
-            chartData: data.chart_data,
           },
         });
       })

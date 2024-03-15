@@ -6,8 +6,25 @@ export const defaultStrategyParams = {
   INCLUDE_BLACKBOX_LOGS: 0,
   UPDATE_SL_EVERY: 0,
   CANDLE_SIZE_MINUTES: 5,
-  TICK_INTERVAL_MINUTES: 1,
   LEVERAGE: 1,
+};
+
+const defaultTickFromCandleSize = {
+  1: 1,
+  3: 1,
+  5: 1,
+  15: 1,
+  30: 1,
+  60: 5,
+  120: 5,
+  240: 15,
+  360: 15,
+  480: 15,
+  720: 15,
+  1440: 30,
+  4320: 30,
+  10080: 60,
+  43200: 60,
 };
 
 function getStrategyToUse(generatedStrategy) {
@@ -21,6 +38,8 @@ function getStrategyToUse(generatedStrategy) {
   return {
     ...generatedStrategy,
     INITIAL_BALANCE: generatedStrategy.IDEAL_TRADE_AMOUNT,
+    TICK_INTERVAL_MINUTES:
+      defaultTickFromCandleSize[generatedStrategy.CANDLE_SIZE_MINUTES] || 1,
     ...filteredDefaultParams,
   };
 }
