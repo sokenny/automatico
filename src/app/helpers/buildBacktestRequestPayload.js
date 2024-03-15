@@ -18,7 +18,9 @@ function buildBacktestRequestPayload(formState) {
     ...defaultHiddenStrategyParams,
     ...config,
     ENTRY_TRIGGER: toPythonDictStyle(config.ENTRY_TRIGGER),
-    EXIT_TRIGGER: toPythonDictStyle(config.EXIT_TRIGGER),
+    EXIT_TRIGGER: config.EXIT_TRIGGER
+      ? toPythonDictStyle(config.EXIT_TRIGGER)
+      : null,
     PERIOD: period,
   };
 

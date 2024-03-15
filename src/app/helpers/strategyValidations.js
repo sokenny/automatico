@@ -63,23 +63,23 @@ const strategyValidations = {
     isPositiveOrZeroInteger(strategy.ENTRY_TRIGGER?.period_deviation),
   // EMPIEZA EXIT
   'EXIT_TRIGGER.period': (strategy) =>
-    isPositiveInteger(strategy.ENTRY_TRIGGER?.period),
+    isPositiveInteger(strategy.EXIT_TRIGGER?.period),
   'EXIT_TRIGGER.cross_percentage': (strategy) =>
-    isNumber(strategy.ENTRY_TRIGGER?.cross_percentage),
+    isNumber(strategy.EXIT_TRIGGER?.cross_percentage),
   'EXIT_TRIGGER.target_value': (strategy) => {
     if (['RSI', 'CCI'].includes(strategy.INDICATOR)) {
-      return isNumber(strategy.ENTRY_TRIGGER?.target_value);
+      return isNumber(strategy.EXIT_TRIGGER?.target_value);
     }
     return true;
   },
   'EXIT_TRIGGER.cross_direction': (strategy) =>
     ['above_to_below', 'below_to_above'].includes(
-      strategy.ENTRY_TRIGGER?.cross_direction,
+      strategy.EXIT_TRIGGER?.cross_direction,
     ),
   'EXIT_TRIGGER.band_to_cross': (strategy) =>
-    ['upper', 'lower'].includes(strategy.ENTRY_TRIGGER?.band_to_cross),
+    ['upper', 'lower'].includes(strategy.EXIT_TRIGGER?.band_to_cross),
   'EXIT_TRIGGER.period_deviation': (strategy) =>
-    isPositiveOrZeroInteger(strategy.ENTRY_TRIGGER?.period_deviation),
+    isPositiveOrZeroInteger(strategy.EXIT_TRIGGER?.period_deviation),
 };
 
 export default strategyValidations;

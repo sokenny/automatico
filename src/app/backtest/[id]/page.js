@@ -1,6 +1,6 @@
 import ma8Fetch from '@/app/helpers/ma8Fetch';
-import BacktestChart from '@/app/components/BacktestChart/BacktestChart';
 import OperationsTable from '@/app/components/OperationsTable/OperationsTable';
+import CandleStickChart from '@/app/components/CandleStickChart/CandleStickChart';
 import styles from './page.module.css';
 
 export default async function BacktestPage({ params }) {
@@ -57,10 +57,7 @@ export default async function BacktestPage({ params }) {
       </div>
       <div className={styles.results}>
         <div className={styles.chart}>
-          <BacktestChart
-            closedOperations={backtest.operations}
-            chartData={backtest.chart_data}
-          />
+          <CandleStickChart backtestId={backtest.id} />
         </div>
         {operationsRows.length > 0 && (
           <div className={styles.operations}>

@@ -24,13 +24,14 @@ const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
-  INDICATOR: 'CCI',
+  INDICATOR: 'RSI',
   ENTRY_TRIGGER: {
     cross_direction: 'below_to_above',
     position_type: 'long',
-    target_value: 200,
-    period: 20,
+    target_value: 60,
+    period: 14,
   },
+  EXIT_TRIGGER: null,
   TAKE_PROFIT: 1,
   STOP_LOSS: 1,
   MAX_WEIGHT_ALLOCATION: 1,
@@ -39,6 +40,7 @@ const mockupGeneratedStrategy = {
 
 // TODO-p2: Add quesiton mark tooltips a 'entry' y 'exit'
 // TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
+// TODO-p1: Create redis cache db
 
 const StrategyGenerator = () => {
   const router = useRouter();
@@ -61,7 +63,7 @@ const StrategyGenerator = () => {
   );
 
   const [formState, setFormState] = useState({
-    // entry: 'Si BTC cruza el CCI 200, comprá 1k USD.', // lo harcodeamos para testear mas facil
+    // entry: 'Si BTC cruza el RSI 60, comprá 1k USD.', // lo harcodeamos para testear mas facil
     // exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
     // strategy: getStrategyToUse(mockupGeneratedStrategy), // lo harcodeamos para testear mas facil
     entry: randomExample.current.entry,
@@ -282,10 +284,6 @@ const StrategyGenerator = () => {
     days: numDaysInPeriod,
     tickSize: formState.strategy?.TICK_INTERVAL_MINUTES,
   });
-
-  // if (!user) {
-  //   return 'Loading...';
-  // }
 
   return (
     <div>

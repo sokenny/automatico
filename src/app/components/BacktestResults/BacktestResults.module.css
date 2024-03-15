@@ -52,6 +52,10 @@
   color: var(--error);
 }
 
+.chart {
+  margin-bottom: 16px;
+}
+
 @media (max-width: 720px) {
   .row {
     flex-wrap: wrap;

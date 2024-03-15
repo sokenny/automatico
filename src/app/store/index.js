@@ -6,6 +6,7 @@ const useStore = create((set) => ({
   setCookies: (cookies) => set({ cookies }),
   setUser: (user) => set({ user }),
   fetchStore: (session, token) => {
+    set({ token: token });
     if (session) {
       try {
         fetch(
@@ -21,7 +22,7 @@ const useStore = create((set) => ({
           .then((response) => response.json())
           .then((data) => {
             console.log('datusa que llegó: ', data);
-            set({ user: data, token });
+            set({ user: data });
           });
       } catch (error) {
         console.error('Failed to fetch store:', error);

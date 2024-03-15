@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  position: relative;
+}
+
+.container.isLoading {
+  background-color: rgba(0, 0, 0, 0.025);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading .text {
+  margin-top: 12px;
+}

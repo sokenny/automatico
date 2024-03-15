@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import BacktestChart from '../BacktestChart/BacktestChart';
+import CandleStickChart from '../CandleStickChart/CandleStickChart';
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import unixToDate from '../../helpers/unixToDate';
 import styles from './BacktestResults.module.css';
 
@@ -11,15 +12,17 @@ const BacktestResults = ({ results }) => {
     100;
   return (
     <div className={styles.container}>
-      <div>
-        <BacktestChart
-          chartData={results.chartData}
-          closedOperations={results.closed_operations}
-        />
-      </div>
       <div className={styles.tradedPeriod}>
         {unixToDate(results.traded_period.from / 1000)} -{' '}
         {unixToDate(results.traded_period.to / 1000)}
+      </div>
+      <div>
+        <ErrorBoundary>
+          <CandleStickChart
+            backtestId={results.backtestId}
+            className={styles.chart}
+          />
+        </ErrorBoundary>
       </div>
       <div className={styles.row}>
         <div className={styles.dataPoint}>
