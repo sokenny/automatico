@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
 import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
 import getTotalCandlesToAnalyse from '../../helpers/getTotalCandlesToAnalyse';
+import defaultPeriodsFromTickSize from '../../constants/defaultPeriodsFromTickSize';
 import validateStrategy from '../../helpers/validateStrategy';
 import setMissingDefaults from '../../helpers/setMissingDefaults';
 import promptExamples from '../../helpers/promptExamples';
@@ -38,9 +39,10 @@ const mockupGeneratedStrategy = {
   IDEAL_TRADE_AMOUNT: 1000,
 };
 
-// TODO-p2: Add quesiton mark tooltips a 'entry' y 'exit'
+// TODO-p1: Crear pagina de documentacion
 // TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
-// TODO-p1: Create redis cache db
+// TODO-p2: Add quesiton mark tooltips a 'entry' y 'exit'
+// TODO-p2: Create redis cache db
 
 const StrategyGenerator = () => {
   const router = useRouter();
@@ -146,6 +148,9 @@ const StrategyGenerator = () => {
           setFormState({
             ...formState,
             strategy: setMissingDefaults(strategy),
+            backtestPeriod:
+              defaultPeriodsFromTickSize[strategy.TICK_INTERVAL_MINUTES] ||
+              'week',
             errors: {
               ...formState.errors,
               strategyConfig: errors,

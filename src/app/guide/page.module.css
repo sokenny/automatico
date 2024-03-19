@@ -1,0 +1,79 @@
+.container {
+    max-width: 800px;
+}
+
+.title {
+    font-size: 32px;
+}
+
+.sectionsList {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+.subList {
+    margin-left: 16px;
+}
+
+.list { 
+    margin: 32px 0;
+}
+
+.list > li {
+    /* margin-bottom: 8px; */
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section h2 {
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.link {
+    color: var(--linkBlue);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    text-decoration: underline;
+}
+
+.section h3 {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.section p {
+    margin-bottom: 16px;
+}
+
+.indicators {
+    color: var(--linkBlue);
+}
+
+.entryEx {
+    background-color: rgba(0,0,0,0.025);
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    border: 1px solid rgba(0,0,0,0.1);
+    color: var(--linkBlue);
+}
+
+.examples {
+    margin-bottom: 16px;
+}
+
+.parameter {
+    margin-bottom: 4px;
+}
+
+.parameter span {
+    font-weight: 600;
+    color: var(--linkBlue);
+}

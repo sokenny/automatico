@@ -250,10 +250,12 @@ const StrategyConfigFields = ({
                     ...strategy.ENTRY_TRIGGER,
                     period: parseInt(e.target.value),
                   },
-                  EXIT_TRIGGER: {
-                    ...strategy.EXIT_TRIGGER,
-                    period: parseInt(e.target.value),
-                  },
+                  EXIT_TRIGGER: exitsWithTPorSL
+                    ? null
+                    : {
+                        ...strategy.EXIT_TRIGGER,
+                        period: parseInt(e.target.value),
+                      },
                 })
               }
               value={strategy.ENTRY_TRIGGER?.period}
@@ -275,12 +277,14 @@ const StrategyConfigFields = ({
                     ...strategy,
                     ENTRY_TRIGGER: {
                       ...strategy.ENTRY_TRIGGER,
-                      period_deviation: parseInt(e.target.value),
+                      period_deviation: parseFloat(e.target.value),
                     },
-                    EXIT_TRIGGER: {
-                      ...strategy.EXIT_TRIGGER,
-                      period_deviation: parseInt(e.target.value),
-                    },
+                    EXIT_TRIGGER: exitsWithTPorSL
+                      ? null
+                      : {
+                          ...strategy.EXIT_TRIGGER,
+                          period_deviation: parseFloat(e.target.value),
+                        },
                   })
                 }
                 value={strategy.ENTRY_TRIGGER?.period_deviation}
@@ -480,13 +484,8 @@ const StrategyConfigFields = ({
               placeholder="Select an indicator"
               disallowEmptySelection
               selectedKeys={[strategy.INDICATOR]}
-              onChange={(e) => {
-                setStrategy({
-                  ...strategy,
-                  INDICATOR: e.target.value,
-                });
-              }}
               selectionMode="single"
+              onChange={() => {}}
               isDisabled={true}
             >
               {indicators.map((indicator) => (
@@ -505,15 +504,7 @@ const StrategyConfigFields = ({
                 type="number"
                 label={withTooltip(<>Period</>, 'EXIT_TRIGGER.period')}
                 placeholder="20"
-                onChange={(e) =>
-                  setStrategy({
-                    ...strategy,
-                    EXIT_TRIGGER: {
-                      ...strategy.EXIT_TRIGGER,
-                      period: parseInt(e.target.value),
-                    },
-                  })
-                }
+                onChange={() => {}}
                 value={strategy.EXIT_TRIGGER?.period}
                 isInvalid={
                   !strategyValidations['EXIT_TRIGGER.period'](strategy)
@@ -531,15 +522,7 @@ const StrategyConfigFields = ({
                     'EXIT_TRIGGER.period_deviation',
                   )}
                   placeholder="2"
-                  onChange={(e) =>
-                    setStrategy({
-                      ...strategy,
-                      EXIT_TRIGGER: {
-                        ...strategy.EXIT_TRIGGER,
-                        period_deviation: parseInt(e.target.value),
-                      },
-                    })
-                  }
+                  onChange={() => {}}
                   value={strategy.EXIT_TRIGGER?.period_deviation}
                   isInvalid={
                     !strategyValidations['EXIT_TRIGGER.period_deviation'](

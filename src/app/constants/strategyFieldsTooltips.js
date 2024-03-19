@@ -1,3 +1,16 @@
+const crossDirection =
+  "Specifies the direction of the cross required to trigger a signal: 'Above to below' for a downward cross, or 'Below to above' for an upward cross.";
+const crossPercentage =
+  'The percentage above or below a moving average that the price must cross to trigger the signal.';
+const positionType =
+  "Indicates the type of trade to open when the entry triggers: 'long' for opening a position with the expectation of price increase, or 'short' for opening a position with the expectation of price decrease.";
+const period =
+  'The window size (number of candles) used for calculating the indicator. If not specified, a default value is used.';
+const periodDeviation =
+  'The number of standard deviations used to calculate the indicator (BBANDS). If not specified, a default value is used.';
+const targetValue =
+  'The indicator value that must be crossed to activate the trigger signal. Applicable for strategies based on indicators like RSI or CCI.';
+
 const strategyFieldsTooltips = {
   'PAIR':
     'The cryptocurrency pair you want to trade with, always paired with USDT.',
@@ -9,16 +22,15 @@ const strategyFieldsTooltips = {
   'INDICATOR': 'The technical indicator for your trading strategy.',
   'STOP_LOSS':
     'Define a maximum loss percentage at which your trade will be automatically closed to minimize losses.',
-  'ENTRY_TRIGGER.cross_direction':
-    "Specifies the direction of the cross required to trigger a trade signal: 'Above to below' for a downward cross, or 'Below to above' for an upward cross.",
-  'ENTRY_TRIGGER.cross_percentage':
-    'The percentage above or below a moving average that the price must cross to trigger the signal.',
-  'ENTRY_TRIGGER.position_type':
-    "Indicates the type of trade to open when the entry triggers: 'long' for opening a position with the expectation of price increase, or 'short' for opening a position with the expectation of price decrease.",
-  'ENTRY_TRIGGER.period':
-    'The window size (number of candles) used for calculating the indicator. If not specified, a default value is used.',
-  'ENTRY_TRIGGER.target_value':
-    'The indicator value that must be crossed to activate the signal. Applicable for strategies based on indicators like RSI or CCI.',
+  'ENTRY_TRIGGER.cross_direction': crossDirection,
+  'ENTRY_TRIGGER.cross_percentage': crossPercentage,
+  'ENTRY_TRIGGER.position_type': positionType,
+  'ENTRY_TRIGGER.period': period,
+  'ENTRY_TRIGGER.period_deviation': periodDeviation,
+  'ENTRY_TRIGGER.target_value': targetValue,
+  'EXIT_TRIGGER.cross_direction': crossDirection,
+  'EXIT_TRIGGER.cross_percentage': crossPercentage,
+  'EXIT_TRIGGER.target_value': targetValue,
   'CANDLE_SIZE_MINUTES':
     'Determines the timeframe of the candles used for analysis.',
   'LEVERAGE': 'The leverage level for your trades.',
