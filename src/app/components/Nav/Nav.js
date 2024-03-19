@@ -32,6 +32,7 @@ const Nav = ({ cookies, authToken }) => {
   const tabs = [
     { name: 'Backtest', path: '/backtest', isAuth: true },
     { name: 'Strategies', path: '/strategies', isAuth: true },
+    { name: 'Guide', path: '/guide', isAuth: false },
   ];
 
   return (

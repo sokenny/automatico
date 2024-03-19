@@ -1,10 +1,11 @@
+import { Button } from '@nextui-org/react';
+import Link from 'next/link';
 import validIndicators from '../helpers/validIndicators';
 import strategyFieldsTooltips from '../constants/strategyFieldsTooltips';
 import backtestFieldsTooltips from '../constants/backtestFieldsTooltips';
 import configKeyToLabel from '../constants/configKeyToLabel';
 import styles from './page.module.css';
 
-// TODO-p1: que el modal se muestre maximo 2 veces
 function Guide() {
   return (
     <div className={styles.container}>
@@ -33,11 +34,18 @@ function Guide() {
         </ul>
       </div>
       <section className={styles.section}>
-        <h2>
-          1. Crear una estrategia{' '}
-          <a className={styles.link}>Ver demo (2 min.)</a>
-        </h2>
-        <div>[PONER VIDEO ACA]</div>
+        <h2>1. Crear una estrategia</h2>
+        <div className={styles.loomContainer}>
+          <div>
+            <iframe
+              src="https://www.loom.com/embed/adc6f34bf1fe4ce3ac849396cb4d7734?sid=28444408-debd-4eba-97c1-d09a05c255ae"
+              frameBorder="0"
+              webkitallowfullscreen="true"
+              mozallowfullscreen="true"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
         <h3>- Criterio de entrada:</h3>
         <p>
           Definí qué condiciones se deben cumplir para abrir una posición. Estas
@@ -69,10 +77,44 @@ function Guide() {
           especifica cierta información, nuestro software va a elegir un
           parámetro por default que el usuario puede modificar posteriormente.
         </p>
+        <div className={styles.exitCriteria}>
+          <h3>- Criterio de salida:</h3>
+          <p>
+            Existen 2 criterios principales de salida. De tipo{' '}
+            <span>take profit & stop loss</span> o de tipo{' '}
+            <span>indicador</span>.
+          </p>
+          <p>
+            <span>Take Profit & Stop Loss:</span> Cierran la posición al cumplir
+            una determinada ganancia o pérdida. Ejemplos:
+          </p>
+          <div className={styles.exitEx}>
+            Salir cuando se logre un recorrido de precio de 3% a favor o 1% en
+            contra.
+          </div>
+          <p>
+            <span>Indicador:</span> Cierran cuando se activa una señal de un
+            indicador, tal como los criterios de entrada que vimos arriba.
+            Ejemplo:
+          </p>
+          <div className={styles.exitEx}>
+            Salir cuando el precio de XRPUSDT cruce hacia abajo el EMA50.
+          </div>
+        </div>
       </section>
       <section className={styles.section}>
         <h2>2. Editar los parámetros de la estrategia</h2>
-        <div>[PONER VIDEO ACA]</div>
+        <div className={styles.loomContainer}>
+          <div>
+            <iframe
+              src="https://www.loom.com/embed/28be6b9c25f347d29d9a8df00761fc74?sid=e976f9fb-fc24-485d-bb91-36d212c4be2e"
+              frameBorder="0"
+              webkitallowfullscreen="true"
+              mozallowfullscreen="true"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
         <p>
           Una vez generada la estrategia, podés editar los parámetros en caso de
           que no reflejen exactamente lo que necesitas. A continuación está la
@@ -94,7 +136,17 @@ function Guide() {
       </section>
       <section className={styles.section}>
         <h2>3. Editar los parámetros del backtest</h2>
-        <div>[PONER VIDEO ACA]</div>
+        <div className={styles.loomContainer}>
+          <div>
+            <iframe
+              src="https://www.loom.com/embed/f3e40d564c244a60842f88471d2a7656?sid=f45d6d3b-23fa-4977-aa4e-c2b3b16c2d4a"
+              frameBorder="0"
+              webkitallowfullscreen="true"
+              mozallowfullscreen="true"
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
         <p>
           Solo falta asegurarse que la configuración del backtest sea la que
           precisas.
@@ -108,6 +160,11 @@ function Guide() {
           {backtestFieldsTooltips['TICK_INTERVAL_MINUTES']}
         </div>
       </section>
+      <Link href="/backtest">
+        <Button className={styles.cta} color="primary">
+          Probar mi estrategia
+        </Button>
+      </Link>
     </div>
   );
 }

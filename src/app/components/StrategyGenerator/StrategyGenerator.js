@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef, useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -39,7 +40,6 @@ const mockupGeneratedStrategy = {
   IDEAL_TRADE_AMOUNT: 1000,
 };
 
-// TODO-p1: Crear pagina de documentacion
 // TODO-p1: Allow creating a backtest from an existing strategy.This auto-fills the strategy generator with the provided strategy config
 // TODO-p2: Add quesiton mark tooltips a 'entry' y 'exit'
 // TODO-p2: Create redis cache db
@@ -85,7 +85,16 @@ const StrategyGenerator = () => {
   const resultsRef = useRef(null);
 
   useEffect(() => {
-    onOpenErrorStrategyModal();
+    const showedErrorStrategyCount = parseInt(
+      localStorage.getItem('showed_error_strategy_count') || 0,
+    );
+    if (showedErrorStrategyCount <= 6) {
+      onOpenErrorStrategyModal();
+      localStorage.setItem(
+        'showed_error_strategy_count',
+        showedErrorStrategyCount + 1,
+      );
+    }
   }, [onOpenErrorStrategyModal]);
 
   useEffect(() => {
@@ -327,13 +336,9 @@ const StrategyGenerator = () => {
       </div>
       <div className={`${styles.aiPrompt} ${styles.step}`}>
         <div className={styles.tutorial}>
-          <a
-            href="https://www.loom.com/share/0953b357dfad494da4c81f36589a3c6e?sid=9ce5993c-9466-4f3e-b15f-6d00068b2a78"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Click aquí para ver tutorial (2 min.)
-          </a>
+          <Link href="/guide" passHref>
+            Click aquí para ver tutorial
+          </Link>
         </div>
         <div className={styles.entryAndExitContainer}>
           <div className={styles.entryAndExit}>
