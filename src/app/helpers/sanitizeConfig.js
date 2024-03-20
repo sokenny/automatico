@@ -3,6 +3,15 @@ function sanitizeConfig(config) {
   if (!copy?.ENTRY_TRIGGER?.cross_percentage) {
     copy.ENTRY_TRIGGER.cross_percentage = 0;
   }
+
+  if (
+    copy.EXIT_TRIGGER &&
+    (copy.INDICATOR === 'SMA' || copy.INDICATOR === 'EMA') &&
+    !copy.EXIT_TRIGGER.cross_percentage
+  ) {
+    copy.EXIT_TRIGGER.cross_percentage = 0;
+  }
+
   if (!copy?.ENTRY_TRIGGER?.position_type) {
     copy.ENTRY_TRIGGER.position_type = 'long';
   }

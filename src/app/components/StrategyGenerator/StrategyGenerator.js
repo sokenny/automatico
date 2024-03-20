@@ -24,6 +24,9 @@ import styles from './StrategyGenerator.module.css';
 const MAX_CANDLES_ALLOWED = 50000;
 const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
+// TODO-p1: Agregar mails de bienvenida (mailgun ma8app@gmail.com)
+// TODO-p2: Agregar stochastic oscillator u otro indicador
+
 const mockupGeneratedStrategy = {
   PAIR: 'BTCUSDT',
   INDICATOR: 'RSI',
