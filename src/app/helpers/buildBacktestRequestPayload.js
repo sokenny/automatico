@@ -1,5 +1,5 @@
 import toPythonDictStyle from './toPythonDictStyle';
-import getPeriodForBacktest from './getPeriodForBacktest';
+import { getPeriodForBacktest } from './calculateStartAndEndDate';
 
 const defaultHiddenStrategyParams = {
   STRATEGY: 'reversion',

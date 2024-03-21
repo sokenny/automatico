@@ -6,7 +6,7 @@ import useStore from '../../store/index';
 import { Button, useDisclosure } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
-import getDaysInFormPeriod from '../../helpers/getDaysInFormPeriod';
+import { getDaysInFormPeriod } from '../../helpers/calculateStartAndEndDate';
 import getTotalCandlesToAnalyse from '../../helpers/getTotalCandlesToAnalyse';
 import defaultPeriodsFromTickSize from '../../constants/defaultPeriodsFromTickSize';
 import validateStrategy from '../../helpers/validateStrategy';
@@ -25,6 +25,7 @@ const MAX_CANDLES_ALLOWED = 50000;
 const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
 // TODO-p1: Agregar mails de bienvenida (mailgun ma8app@gmail.com)
+// TODO-p1: Mandar mail a los usuarios de ma8 para que vuelvan a probar y nos den su feedback
 // TODO-p2: Agregar stochastic oscillator u otro indicador
 
 const mockupGeneratedStrategy = {
@@ -60,13 +61,10 @@ const StrategyGenerator = () => {
     onOpen: onOpenErrorStrategyModal,
     onOpenChange: onOpenErrorStrategyModalChange,
   } = useDisclosure();
-
-  const { user, token } = useStore();
-
+  const { user, token, refetchUserData } = useStore();
   const randomExample = useRef(
     promptExamples[Math.floor(Math.random() * promptExamples.length)],
   );
-
   const [formState, setFormState] = useState({
     // entry: 'Si BTC cruza el RSI 60, comprá 1k USD.', // lo harcodeamos para testear mas facil
     // exit: 'Cerrá la posición con una ganancia del 1% o si la pérdida supera el 1%.', // lo harcodeamos para testear mas facil
@@ -276,6 +274,7 @@ const StrategyGenerator = () => {
       .then((data) => {
         if (data.success) {
           toast.success('Estrategia guardada con éxito');
+          refetchUserData();
           setFormState({ ...formState, createdStrategyId: data.strategy_id });
           router.push(`/strategy/${data.strategy_id}`);
         } else {
@@ -321,13 +320,21 @@ const StrategyGenerator = () => {
           <div className={styles.item}>
             -<b>Discord:</b> Te gustaría tener acceso gratis de por vida? Sumate
             a discord y danos tu feedback :){' '}
-            <a href="https://discord.gg/3mEEmD45">
+            <a
+              href="https://discord.gg/3mEEmD45"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               https://discord.gg/3mEEmD45
             </a>
           </div>
           <div className={styles.item}>
             -<b>Solicitá features:</b> Tenés un feature request?{' '}
-            <a href="https://ma8.canny.io/feature-requests/">
+            <a
+              href="https://ma8.canny.io/feature-requests/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Publicalo en canny! 🙏
             </a>{' '}
             También vas a poder ver en que estamos trabajando.
@@ -410,23 +417,6 @@ const StrategyGenerator = () => {
           <div className={`${styles.createdStrategy} ${styles.step}`}>
             <div className={styles.createdStrategyHeader}>
               <div className={styles.stepTitle}>Estrategia creada:</div>
-              <div className={styles.tutorial}>
-                <a
-                  href="https://www.loom.com/share/0980f2e336de45c88a2c1eb444653acd?sid=b85d8080-671e-4628-9074-59e76fba8d84"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Tutorial Vid 1 (5 min.)
-                </a>
-                <span> --- </span>
-                <a
-                  href="https://www.loom.com/share/57598054ca5a4a7ba94018d547b8f728"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Tutorial Vid 2 (2 min.)
-                </a>
-              </div>
             </div>
             <div className={styles.strategyDetails}>
               <StrategyConfigFields

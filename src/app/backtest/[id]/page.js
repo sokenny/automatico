@@ -59,6 +59,7 @@ export default async function BacktestPage({ params }) {
         <div className={styles.chart}>
           <CandleStickChart backtestId={backtest.id} />
         </div>
+        {/* TODO-p1: Mostrar data del profit, ROI, ganadas, perdidas etc tal como hacemos al generar el backtest. Emprolijar ese component e incorporarlo acá también */}
         {operationsRows.length > 0 && (
           <div className={styles.operations}>
             <OperationsTable rows={operationsRows} />

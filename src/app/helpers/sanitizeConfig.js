@@ -12,6 +12,10 @@ function sanitizeConfig(config) {
     copy.EXIT_TRIGGER.cross_percentage = 0;
   }
 
+  if (copy.EXIT_TRIGGER && copy.ENTRY_TRIGGER.period) {
+    copy.EXIT_TRIGGER.period = copy.ENTRY_TRIGGER.period;
+  }
+
   if (!copy?.ENTRY_TRIGGER?.position_type) {
     copy.ENTRY_TRIGGER.position_type = 'long';
   }

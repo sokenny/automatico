@@ -18,14 +18,14 @@ import styles from './Nav.module.css';
 const Nav = ({ cookies, authToken }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const { user, fetchStore, setCookies } = useStore();
+  const { user, fetchUserData, setCookies } = useStore();
 
   useEffect(() => {
     if (cookies) {
       setCookies(cookies);
     }
     if (session?.user && !user) {
-      fetchStore(session, authToken);
+      fetchUserData(session, authToken);
     }
   }, [session]);
 

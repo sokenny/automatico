@@ -13,7 +13,8 @@ export default function StrategiesPage() {
   const strategies = user.strategies;
 
   function getStrategyRows(strategies) {
-    return strategies.map((strategy) => {
+    const sortedStrategies = strategies.sort((a, b) => b.id - a.id);
+    return sortedStrategies.map((strategy) => {
       return {
         id: strategy.id,
         name: strategy.name,

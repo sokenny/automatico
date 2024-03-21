@@ -14,6 +14,10 @@ const backtestPeriods = [
     label: 'Últimos 30 días',
   },
   {
+    value: 'quarter',
+    label: 'Últimos 90 días',
+  },
+  {
     value: 'year',
     label: 'Últimos 365 días',
   },
