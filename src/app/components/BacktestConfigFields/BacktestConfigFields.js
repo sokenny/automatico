@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Select, SelectItem, Tooltip, Input } from '@nextui-org/react';
 import backtestFieldsTooltips from '../../constants/backtestFieldsTooltips.js';
 import styles from './BacktestConfigFields.module.css';
@@ -64,7 +64,7 @@ const BacktestConfigFields = ({
     className: styles.input,
   };
 
-  function withTooltip(component, fieldName) {
+  function withTooltip(label, fieldName) {
     return (
       <Tooltip
         key={fieldName}
@@ -76,7 +76,7 @@ const BacktestConfigFields = ({
         color="primary"
         delay={500}
       >
-        <div className={styles.label}>{component}</div>
+        <div className={styles.label}>{label}</div>
       </Tooltip>
     );
   }
@@ -95,7 +95,6 @@ const BacktestConfigFields = ({
             setFormState({
               ...formState,
               backtestPeriod: e.target.value,
-              runBacktestDisabled: false,
             });
           }}
           selectionMode="single"
@@ -121,7 +120,6 @@ const BacktestConfigFields = ({
                 setFormState({
                   ...formState,
                   customPeriodFrom: e.target.value,
-                  runBacktestDisabled: false,
                 })
               }
               value={
@@ -138,7 +136,6 @@ const BacktestConfigFields = ({
                 setFormState({
                   ...formState,
                   customPeriodTo: e.target.value,
-                  runBacktestDisabled: false,
                 })
               }
               value={formState.customPeriodTo ? formState.customPeriodTo : ''}
@@ -160,7 +157,6 @@ const BacktestConfigFields = ({
                 ...formState.strategy,
                 TICK_INTERVAL_MINUTES: parseInt(e.target.value),
               },
-              runBacktestDisabled: false,
             });
           }}
           selectionMode="single"

@@ -89,7 +89,7 @@ const StrategyConfigFields = ({
     className: styles.input,
   };
 
-  function withTooltip(component, fieldName) {
+  function withTooltip(label, fieldName) {
     return (
       <Tooltip
         key={fieldName}
@@ -101,7 +101,7 @@ const StrategyConfigFields = ({
         color="primary"
         delay={500}
       >
-        <div className={styles.label}>{component}</div>
+        <div className={styles.label}>{label}</div>
       </Tooltip>
     );
   }
