@@ -189,7 +189,7 @@ const StrategyConfigFields = ({
           label={withTooltip(<>Candle size</>, 'CANDLE_SIZE_MINUTES')}
           placeholder="Select a candle"
           disallowEmptySelection
-          selectedKeys={[strategy.CANDLE_SIZE_MINUTES.toString()]}
+          selectedKeys={[strategy.CANDLE_SIZE_MINUTES?.toString()]}
           onChange={(e) => {
             setStrategy({
               ...strategy,

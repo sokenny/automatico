@@ -23,7 +23,6 @@ const CandleStickChart = ({ backtestId, className }) => {
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/chart/${backtestId}`,
       );
       const data = await response.json();
-      console.log(data);
 
       // Update the consolidated state object
       setChartData((prev) => ({

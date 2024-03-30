@@ -1,6 +1,5 @@
 'use client';
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -10,10 +9,8 @@ import { getDaysInFormPeriod } from '../../helpers/calculateStartAndEndDate';
 import getTotalCandlesToAnalyse from '../../helpers/getTotalCandlesToAnalyse';
 import defaultPeriodsFromTickSize from '../../constants/defaultPeriodsFromTickSize';
 import validateStrategy from '../../helpers/validateStrategy';
-import setMissingDefaults from '../../helpers/setMissingDefaults';
 import promptExamples from '../../helpers/promptExamples';
 import buildBacktestRequestPayload from '../../helpers/buildBacktestRequestPayload';
-import sanitizeConfig from '../../helpers/sanitizeConfig';
 import BacktestConfigFields from '../BacktestConfigFields/BacktestConfigFields';
 import CandleSizeExceededModal from '../Modals/CandleSizeExceededModal/CandleSizeExceededModal';
 import ErrorStrategyModal from '../Modals/ErrorStrategyModal/ErrorStrategyModal';
@@ -25,6 +22,9 @@ const MAX_CANDLES_ALLOWED = 50000;
 const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
 // TODO-p1: Agregar mails de bienvenida (mailgun ma8app@gmail.com)
+// TODO-p1: Que la userData query del principio sea mucho mas eficiente. Es decir, traiga menos cosas
+// TODO-p1: Pagarle a un crypto influencer para que muestre la pagina
+// TODO-p2: Traducir al ingles y publicar en foros en ingles
 // TODO-p1: Mandar mail a los usuarios de ma8 para que vuelvan a probar y nos den su feedback
 // TODO-p2: Agregar stochastic oscillator u otro indicador
 
@@ -82,7 +82,6 @@ const StrategyGenerator = () => {
     },
   });
 
-  console.log('formState: ', formState);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -148,7 +147,7 @@ const StrategyGenerator = () => {
       .then((data) => {
         if (data.success) {
           setLoading(false);
-          const strategy = getStrategyToUse(sanitizeConfig(data.config));
+          const strategy = getStrategyToUse(structuredClone(data.config));
           const errors = validateStrategy(strategy);
           if (errors.length > 0) {
             toast.warning('Hay algunos parámetros a corregir.');
@@ -157,7 +156,7 @@ const StrategyGenerator = () => {
           }
           setFormState({
             ...formState,
-            strategy: setMissingDefaults(strategy),
+            strategy: strategy,
             backtestPeriod:
               defaultPeriodsFromTickSize[strategy.TICK_INTERVAL_MINUTES] ||
               'week',
@@ -321,11 +320,11 @@ const StrategyGenerator = () => {
             -<b>Discord:</b> Te gustaría tener acceso gratis de por vida? Sumate
             a discord y danos tu feedback :){' '}
             <a
-              href="https://discord.gg/3mEEmD45"
+              href="https://discord.gg/9W5bhtBgwn"
               target="_blank"
               rel="noopener noreferrer"
             >
-              https://discord.gg/3mEEmD45
+              https://discord.gg/9W5bhtBgwn
             </a>
           </div>
           <div className={styles.item}>
@@ -340,15 +339,19 @@ const StrategyGenerator = () => {
             También vas a poder ver en que estamos trabajando.
           </div>
           <div className={styles.item}>
-            -<b>Dev:</b> juanchaher99@gmail.com
+            -<b>Contacto:</b> ma8app@gmail.com
           </div>
         </div>
       </div>
       <div className={`${styles.aiPrompt} ${styles.step}`}>
         <div className={styles.tutorial}>
-          <Link href="/guide" passHref>
-            Click aquí para ver tutorial
-          </Link>
+          <a
+            href="https://www.loom.com/share/e8963c5f6bd74b2d947fa16a6af17561"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Click aquí para ver mini demo
+          </a>
         </div>
         <div className={styles.entryAndExitContainer}>
           <div className={styles.entryAndExit}>
