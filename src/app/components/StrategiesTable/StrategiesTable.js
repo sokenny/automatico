@@ -61,9 +61,6 @@ const StrategiesTable = ({ rows = [] }) => {
         <TableColumn key="indicator" className={styles.th}>
           indicator
         </TableColumn>
-        <TableColumn key="backtests" className={styles.th}>
-          backtests
-        </TableColumn>
         <TableColumn key="created_at" className={styles.th}>
           Creation Date
         </TableColumn>

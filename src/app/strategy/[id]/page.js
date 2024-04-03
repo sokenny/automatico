@@ -29,7 +29,7 @@ export default async function StrategyPage({ params }) {
         period_end_at: backtest.period_end_at,
         initial_balance: backtest.initial_balance,
         end_balance: backtest.end_balance,
-        roi: backtest.roi,
+        roi: backtest.roi + '%',
       };
     });
   }

@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import useStore from '../../store/index';
-import { Button, useDisclosure } from '@nextui-org/react';
+import { Button, useDisclosure, Tooltip } from '@nextui-org/react';
 import { toast } from 'sonner';
 import getStrategyToUse from '../../helpers/getStrategyToUse';
 import { getDaysInFormPeriod } from '../../helpers/calculateStartAndEndDate';
@@ -21,11 +21,11 @@ import styles from './StrategyGenerator.module.css';
 const MAX_CANDLES_ALLOWED = 50000;
 const AVG_CANDLES_PROCESSED_PER_SECOND = 516;
 
+// TODO-p1: Publicar de nuevo en reddit
+// TODO-p1: Comment out not cool strategies in the randomizer
 // TODO-p1: Agregar mails de bienvenida (mailgun ma8app@gmail.com)
-// TODO-p1: Que la userData query del principio sea mucho mas eficiente. Es decir, traiga menos cosas
 // TODO-p1: Pagarle a un crypto influencer para que muestre la pagina
 // TODO-p2: Traducir al ingles y publicar en foros en ingles
-// TODO-p1: Mandar mail a los usuarios de ma8 para que vuelvan a probar y nos den su feedback
 // TODO-p2: Agregar stochastic oscillator u otro indicador
 
 const mockupGeneratedStrategy = {
@@ -255,7 +255,7 @@ const StrategyGenerator = () => {
     const payload = {
       backtestId: formState.backtestResults.backtestId,
       userId: user.id,
-      name: 'Strategy from backtest ' + formState.backtestResults.backtestId,
+      name: 'Strategy from backtest #' + formState.backtestResults.backtestId,
       config: formState.strategy,
     };
 
@@ -356,7 +356,19 @@ const StrategyGenerator = () => {
         <div className={styles.entryAndExitContainer}>
           <div className={styles.entryAndExit}>
             <div className={styles.step}>
-              <h3 className={styles.stepTitle}>Entry:</h3>
+              <Tooltip
+                showArrow
+                content={
+                  'Definí el criterio de entrada para abrir una posición.'
+                }
+                className={styles.tooltip}
+                closeDelay={0}
+                placement="top-start"
+                color="primary"
+                delay={200}
+              >
+                <h3 className={styles.stepTitle}>Entry:</h3>
+              </Tooltip>
               {formState.strategy !== null ? (
                 <div className={`${styles.textarea} ${styles.disabled}`}>
                   {formState.entry}
@@ -374,7 +386,19 @@ const StrategyGenerator = () => {
               )}
             </div>
             <div className={styles.step}>
-              <h3 className={styles.stepTitle}>Exit:</h3>
+              <Tooltip
+                showArrow
+                content={
+                  'Definí el criterio de salida para cerrar una posición.'
+                }
+                className={styles.tooltip}
+                closeDelay={0}
+                placement="top-start"
+                color="primary"
+                delay={200}
+              >
+                <h3 className={styles.stepTitle}>Exit:</h3>
+              </Tooltip>
               {formState.strategy !== null ? (
                 <div className={`${styles.textarea} ${styles.disabled}`}>
                   {formState.exit}
@@ -495,6 +519,16 @@ const StrategyGenerator = () => {
             <div ref={resultsRef}>
               <div className={styles.stepTitle}>Resultados:</div>
               <BacktestResults results={formState.backtestResults} />
+              <div className={styles.feedbackForm}>
+                Dejanos to feedback!:{' '}
+                <a
+                  href="https://forms.gle/u6fDPM9c8xxy7YEe6"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  https://forms.gle/u6fDPM9c8xxy7YEe6
+                </a>
+              </div>
               <div className={styles.backtestActions}>
                 <Button
                   color="primary"

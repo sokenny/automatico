@@ -24,6 +24,13 @@ export default async function BacktestPage({ params }) {
 
   const backtest = await res.json();
 
+  const won = backtest.operations.filter(
+    (operation) => operation.outcome === 1,
+  ).length;
+  const lost = backtest.operations.filter(
+    (operation) => operation.outcome === 0,
+  ).length;
+
   function getOperationsRows(operations) {
     return operations.map((operation) => {
       return {
@@ -59,7 +66,23 @@ export default async function BacktestPage({ params }) {
         <div className={styles.chart}>
           <CandleStickChart backtestId={backtest.id} />
         </div>
-        {/* TODO-p1: Mostrar data del profit, ROI, ganadas, perdidas etc tal como hacemos al generar el backtest. Emprolijar ese component e incorporarlo acá también */}
+        <div className={styles.resultsStats}>
+          <div className={styles.cell}>
+            <span>ROI:</span> {backtest.roi}
+          </div>
+          <div className={styles.cell}>
+            <span>Initial Balance:</span> {backtest.initial_balance}
+          </div>
+          <div className={styles.cell}>
+            <span>End Balance:</span> {backtest.end_balance}
+          </div>
+          <div className={styles.cell}>
+            <span>Won:</span> #{won}
+          </div>
+          <div className={styles.cell}>
+            <span>Lost:</span> #{lost}
+          </div>
+        </div>
         {operationsRows.length > 0 && (
           <div className={styles.operations}>
             <OperationsTable rows={operationsRows} />

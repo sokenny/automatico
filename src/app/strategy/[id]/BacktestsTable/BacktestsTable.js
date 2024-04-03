@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Table,
@@ -19,6 +20,7 @@ import Eye from '../../../icons/Eye/Eye';
 import styles from './BacktestsTable.module.css';
 
 const BacktestsTable = ({ rows = [] }) => {
+  const router = useRouter();
   const [page, setPage] = React.useState(1);
   const rowsPerPage = 10;
   const pages = rows.length ? Math.ceil(rows.length / rowsPerPage) : 0;
@@ -68,7 +70,11 @@ const BacktestsTable = ({ rows = [] }) => {
       </TableHeader>
       <TableBody items={rows ?? []} loadingContent={<Spinner />}>
         {(item) => (
-          <TableRow key={item?.name}>
+          <TableRow
+            key={item?.name}
+            className={styles.row}
+            onClick={() => router.push(`/backtest/${item?.id}`)}
+          >
             {(columnKey) => {
               if (columnKey === 'actions') {
                 return (

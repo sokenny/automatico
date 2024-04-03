@@ -20,7 +20,6 @@ export default function StrategiesPage() {
         name: strategy.name,
         pair: strategy.config.PAIR,
         indicator: strategy.config.INDICATOR,
-        backtests: strategy.backtests.length,
         created_at: strategy.created_at,
       };
     });

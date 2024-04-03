@@ -1,37 +1,51 @@
 .container {
-    max-width: 900px;
+  max-width: 900px;
 }
 
 .header {
-    margin-bottom: 32px;
+  margin-bottom: 32px;
 }
 
 .colLeft {
-    font-size: 32px;
-    display: flex;
-    align-items: center;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
 }
 
 .period {
-    display: flex;
-    margin-left: 16px;
-    text-transform: uppercase;
-    opacity: .5;
-    font-weight: 300;
+  display: flex;
+  margin-left: 16px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  font-weight: 300;
 }
 
 .separator {
-    margin: 0 8px;
+  margin: 0 8px;
 }
 
-.from, .to {
-    display: flex;
+.from,
+.to {
+  display: flex;
 }
 
 .from {
-    margin-right: 16px;
+  margin-right: 16px;
 }
 
 .operations {
-    margin-top: 32px;
+  margin-top: 32px;
+}
+
+.resultsStats {
+  display: flex;
+  margin-top: 16px;
+}
+
+.resultsStats .cell {
+  margin-right: 16px;
+}
+
+.cell span {
+  font-weight: 600;
 }

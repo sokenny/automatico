@@ -1,6 +1,7 @@
 .stepTitle {
   font-size: 20px;
   margin-bottom: 16px;
+  width: fit-content;
 }
 
 .entryAndExit {
@@ -165,6 +166,15 @@
 
 .items .item a {
   color: var(--linkBlue);
+}
+
+.feedbackForm {
+  margin-top: 8px;
+}
+
+.feedbackForm a {
+  color: var(--linkBlue);
+  text-decoration: underline;
 }
 
 @media (max-width: 720px) {
